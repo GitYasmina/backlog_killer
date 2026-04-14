@@ -10,7 +10,10 @@ CREATE TABLE usuarios (
   username VARCHAR(50) NOT NULL UNIQUE,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  avatar VARCHAR(255) DEFAULT 'default.png'
+  fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  ultimo_cambio_password TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, --seguridad de contraseña
+  avatar VARCHAR(255) DEFAULT 'default.png',
+  genero_fav VARCHAR(50) DEFAULT 'Acción' --para el algoritmo de la ruletta
 );
 
 -- Catálogo de videojuegos (Preparado para RAWG API)
@@ -20,7 +23,7 @@ CREATE TABLE videojuegos (
   titulo VARCHAR(150) NOT NULL,
   plataforma VARCHAR(50) NOT NULL,
   genero VARCHAR(50) NOT NULL,
-  duracion_estimada_horas INT -- imprescindible para la ruleta
+  duracion_estimada_horas INT --para la ruleta
 );
 -- Tabla intermedia: lista de cada usuario (Relación N:M)
 CREATE TABLE estados_juego (
@@ -28,6 +31,8 @@ CREATE TABLE estados_juego (
   id_videojuego INT NOT NULL,
   estado ENUM ('pendiente','en_progreso','completado','abandonado') NOT NULL DEFAULT 'pendiente',
   puntuacion INT CHECK (puntuacion BETWEEN 0 AND 10),
+  horas_jugadas INT DEFAULT 0, -- del usuario
+  porcentaje_manual INT DEFAULT 0,
   
   PRIMARY KEY (id_usuario, id_videojuego),
   
