@@ -1,0 +1,166 @@
+/* --- 1. VARIABLES DE ESTILO --- */
+:root {
+    --fondo-oscuro: #0b0e14;
+    --fondo-tarjeta: #161b22;
+    --morado-principal: #7c3aed;
+    --morado-hover: #9061f9;
+    --texto-blanco: #ffffff;
+    --texto-gris: #9ca3af;
+    --borde: #30363d;
+}
+
+/* --- 2. RESET Y BASES --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--fondo-oscuro);
+    color: var(--texto-blanco);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+}
+
+/* --- 3. HEADER --- */
+.main-header {
+    background-color: rgba(11, 14, 20, 0.95);
+    border-bottom: 1px solid var(--borde);
+    padding: 1rem 5%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo a {
+    color: var(--morado-principal);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.nav-menu ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-menu a {
+    color: var(--texto-gris);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+    color: var(--morado-principal);
+}
+
+.auth-buttons .btn-login {
+    color: var(--texto-blanco);
+    text-decoration: none;
+    margin-right: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-register, .btn-cta {
+    background-color: var(--morado-principal);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-register:hover, .btn-cta:hover {
+    background-color: var(--morado-hover);
+    transform: translateY(-2px);
+}
+
+/* --- 4. HERO SECTION (La parte de la esfera) --- */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 100px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    color: var(--texto-gris);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+.btn-cta {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+/* Simulación de la esfera del mockup */
+.hero-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.ruleta-placeholder {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--morado-principal) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(20px);
+    opacity: 0.5;
+    animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.1); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 0.4; }
+}
+
+/* --- 5. FOOTER --- */
+.site-footer {
+    border-top: 1px solid var(--borde);
+    padding: 3rem 5%;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-social a {
+    color: var(--morado-principal);
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 10px;
+}
