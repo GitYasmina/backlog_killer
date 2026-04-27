@@ -145,9 +145,20 @@ body {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 50px rgba(124, 58, 237, 0.4); }
-    50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(124, 58, 237, 0.6); }
-    100% { transform: scale(1); box-shadow: 0 0 50px rgba(124, 58, 237, 0.4); }
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 50px rgba(124, 58, 237, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 100px rgba(124, 58, 237, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 50px rgba(124, 58, 237, 0.4);
+    }
 }
 
 /* --- 6. FOOTER --- */
@@ -161,4 +172,74 @@ body {
 .site-footer p {
     color: var(--texto-gris);
     font-size: 0.9rem;
+}
+
+/* --- 7. ESTILOS LOGIN --- */
+.login-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    background: var(--fondo-tarjeta);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid var(--borde);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.login-card h2 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: var(--texto-blanco);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    background: var(--fondo-oscuro);
+    border: 1px solid var(--borde);
+    padding: 12px;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--morado-principal);
+}
+
+.auth-footer {
+    margin-top: 25px;
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+}
+
+.auth-footer a {
+    color: var(--morado-principal);
+    text-decoration: none;
+    font-weight: 600;
 }
