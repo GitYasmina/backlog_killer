@@ -5,12 +5,12 @@
         <h2>Crea tu cuenta</h2>
 
         <form action="../app/auth_registro.php" method="POST" class="login-form">
-                <!-- user -->
+            <!-- user -->
             <div class="form-group">
                 <label>Gamer Tag (Usuario)</label>
                 <input type="text" name="username" required placeholder="Ej: Slayer99">
             </div>
-                <!-- email -->
+            <!-- email -->
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email" required placeholder="tu@email.com">
@@ -30,25 +30,33 @@
                     <option value="Plataformas">Plataformas</option>
                 </select>
             </div>
-                <!-- contraseña -->
+            <!-- contraseña -->
             <div class="form-group">
                 <label>Contraseña</label>
-                <input type="password" name="password" required placeholder="••••••••">
+                <input type="password" name="password" id="password" required placeholder="••••••••">
+                <div class="password-strength-wrapper">
+                    <div id="strength-bar"></div>
+                </div>
+                <small id="strength-text"></small>
             </div>
 
             <!-- confirmación de Contraseña -->
             <div class="form-group">
                 <label>Confirmar Contraseña</label>
                 <input type="password" name="confirm_password" required placeholder="Repite tu contraseña">
+
             </div>
 
-            <button type="submit" class="btn-cta">REGISTRARME</button>
-        </form>
+    </div>
 
-        <p class="auth-footer">
-            ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
-        </p>
+    <button type="submit" class="btn-cta">REGISTRARME</button>
+    </form>
+
+    <p class="auth-footer">
+        ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
+    </p>
 
     </div>
 </main>
+<script src="../assets/js/validaciones.js"></script>
 <?php include '../views/footer.php'; ?>
