@@ -1,4 +1,5 @@
-/* --- 1. VARIABLES DE ESTILO --- */
+/* --- 1. VARIABLES GLOBALES --- */
+/* Centraliza los colores para cambiar todo el tema oscuro desde aquí */
 :root {
     --fondo-oscuro: #0b0e14;
     --fondo-tarjeta: #161b22;
@@ -10,12 +11,14 @@
 }
 
 /* --- 2. RESET Y BASES --- */
+/* Quita los márgenes por defecto del navegador */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; 
 }
 
+/* Aplica el color oscuro de fondo y la fuente a toda la web */
 body {
     background-color: var(--fondo-oscuro);
     color: var(--texto-blanco);
@@ -25,6 +28,7 @@ body {
 }
 
 /* --- 3. HEADER --- */
+/* Posición 'sticky' para que el menú principal siempre baje contigo al hacer scroll */
 .main-header {
     background-color: rgba(11, 14, 20, 0.95);
     border-bottom: 1px solid var(--borde);
@@ -64,6 +68,7 @@ body {
     transition: color 0.3s;
 }
 
+/* Ilumina los enlaces de navegación al pasar el ratón */
 .nav-menu a:hover {
     color: var(--morado-principal);
 }
@@ -98,6 +103,7 @@ body {
     max-width: 500px;
 }
 
+/* Botón principal de la web (Call to Action) */
 .btn-cta {
     display: inline-block;
     background-color: var(--morado-principal);
@@ -111,13 +117,14 @@ body {
     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
 }
 
+/* Efecto de salto y brillo al hacer hover sobre el botón */
 .btn-cta:hover {
     background-color: var(--morado-hover);
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
 }
 
-/* --- 5. VISUAL (RUELTA/ESFERA) --- */
+/* --- 5. VISUAL (RULETA/ESFERA) --- */
 .hero-visual {
     flex: 1;
     display: flex;
@@ -125,6 +132,7 @@ body {
     position: relative;
 }
 
+/* Animación de latido infinito para el marcador de la ruleta */
 .ruleta-placeholder {
     width: 350px;
     height: 350px;
@@ -145,20 +153,9 @@ body {
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 50px rgba(124, 58, 237, 0.4);
-    }
-
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 100px rgba(124, 58, 237, 0.6);
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 50px rgba(124, 58, 237, 0.4);
-    }
+    0% { transform: scale(1); box-shadow: 0 0 50px rgba(124, 58, 237, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(124, 58, 237, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 0 50px rgba(124, 58, 237, 0.4); }
 }
 
 /* --- 6. FOOTER --- */
@@ -174,7 +171,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* --- 7. ESTILOS LOGIN --- */
+/* --- 7. ESTILOS LOGIN Y FORMULARIOS --- */
 .login-container {
     min-height: 80vh;
     display: flex;
@@ -183,6 +180,7 @@ body {
     padding: 20px;
 }
 
+/* Tarjeta flotante donde van los formularios (Registro, Login, Perfil) */
 .login-card {
     background: var(--fondo-tarjeta);
     padding: 40px;
@@ -218,18 +216,43 @@ body {
     font-size: 0.9rem;
 }
 
-.form-group input {
+/* --- MEJORAS PARA REGISTRO Y PERFIL --- */
+
+/* Hace que los inputs y los selectores sean del mismo tamaño y estilo */
+.form-group input, 
+.form-group select {
     background: var(--fondo-oscuro);
     border: 1px solid var(--borde);
     padding: 12px;
     border-radius: 8px;
-    color: white;
+    color: var(--texto-blanco);
     outline: none;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-family: inherit;
 }
 
-.form-group input:focus {
+/* Borra el diseño de Windows del selector y le pone una flecha customizada */
+.form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 15px) center;
+    padding-right: 40px;
+}
+
+/* Resplandor morado cuando el usuario hace clic para escribir o seleccionar */
+.form-group input:focus, 
+.form-group select:focus {
     border-color: var(--morado-principal);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.1);
+}
+
+/* Fondo oscuro para las opciones del desplegable */
+.form-group select option {
+    background-color: var(--fondo-tarjeta);
+    color: var(--texto-blanco);
 }
 
 .auth-footer {
@@ -242,4 +265,18 @@ body {
     color: var(--morado-principal);
     text-decoration: none;
     font-weight: 600;
+}
+
+/* Botón de cerrar sesión en color rojo para alertar de acción destructiva */
+.logout-link {
+    color: #ff4b4b !important;
+    margin-top: 15px;
+    display: inline-block;
+    font-size: 0.85rem;
+    transition: opacity 0.3s;
+}
+
+.logout-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
 }
