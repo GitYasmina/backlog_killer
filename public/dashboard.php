@@ -1,0 +1,83 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+include '../views/header.php';
+require_once '../app/db.php';
+
+// traemos estadísticas básicas para mostrar en el dashboard
+$user_id = $_SESSION['user_id'];
+$stmt = $conexion->prepare("
+    SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN estado = 'pendiente' THEN 1 ELSE 0 END) as pendientes,
+        SUM(CASE WHEN estado = 'en_progreso' THEN 1 ELSE 0 END) as progreso
+    FROM estados_juego 
+    WHERE id_usuario = ?
+");
+$stmt->execute([$user_id]);
+$stats = $stmt->fetch();
+?>
+
+<main class="dashboard-container">
+    <section class="dashboard-header">
+        <h1>Mi Biblioteca</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value"><?= $stats['total'] ?? 0 ?></span>
+                <span class="stat-label">Juegos Totales</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><?= $stats['pendientes'] ?? 0 ?></span>
+                <span class="stat-label">Pendientes</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><?= $stats['progreso'] ?? 0 ?></span>
+                <span class="stat-label">En Curso</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-actions">
+        <a href="buscar_juego.php" class="btn-primary">➕ Añadir Juego</a>
+        <a href="ruleta.php" class="btn-secondary">🎲 Backlog Killer</a>
+    </section>
+
+    <section class="games-section">
+        <h2>Mis Juegos Recientes</h2>
+        <div class="games-grid">
+            <?php
+            // traemos los últimos 6 juegos añadidos por el usuario con su estado
+            $stmt = $conexion->prepare("
+                SELECT v.titulo, v.genero, ej.estado 
+                FROM estados_juego ej
+                JOIN videojuegos v ON ej.id_videojuego = v.id
+                WHERE ej.id_usuario = ?
+                ORDER BY ej.id_videojuego DESC LIMIT 6
+            ");
+            $stmt->execute([$user_id]);
+            $juegos = $stmt->fetchAll();
+
+            if (empty($juegos)): ?>
+                <div class="empty-state">
+                    <p>Aún no tienes juegos en tu biblioteca.</p>
+                    <a href="buscar_juego.php">¡Empieza a añadir tus joyas!</a>
+                </div>
+            <?php else: 
+                foreach ($juegos as $juego): ?>
+                    <div class="game-card">
+                        <div class="game-info">
+                            <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
+                            <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
+                            <span class="status-badge <?= $juego['estado'] ?>"><?= ucfirst($juego['estado']) ?></span>
+                        </div>
+                    </div>
+                <?php endforeach; 
+            endif; ?>
+        </div>
+    </section>
+</main>
+
+<?php include '../views/footer.php'; ?>
