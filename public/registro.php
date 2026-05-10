@@ -1,60 +1,71 @@
-<?php include '../views/header.php'; ?>
+<?php 
+session_start();
+include '../views/header.php'; 
+// recuperamos los datos temporales en caso de error para rellenar el formulario
+$old = $_SESSION['registro_datos'] ?? ['username' => '', 'email' => '', 'genero_fav' => 'Acción'];
+// limpiamos los datos temporales para que no persistan después de mostrarlos una vez
+unset($_SESSION['registro_datos']);
+?>
 
 <main class="login-container">
     <div class="login-card">
         <h2>Crea tu cuenta</h2>
 
-        <form action="../app/auth_registro.php" method="POST" class="login-form">
-            <!-- user -->
-            <div class="form-group">
-                <label>Gamer Tag (Usuario)</label>
-                <input type="text" name="username" required placeholder="Ej: Slayer99">
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert-message error">
+                <?php
+                if ($_GET['error'] == 'password_mismatch') echo "⚠️ Las contraseñas no coinciden.";
+                elseif ($_GET['error'] == 'exists') echo "⚠️ El usuario o email ya existen.";
+                elseif ($_GET['error'] == 'weak_password') echo "⚠️ La contraseña debe tener 8 caracteres, una mayuscula, una minuscula y un numero.";
+                else echo "⚠️ Error técnico: " . htmlspecialchars($_GET['error']);
+                ?>
             </div>
-            <!-- email -->
+        <?php endif; ?>
+        <form action="../app/auth_registro.php" method="POST" class="login-form">
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" required placeholder="tu@email.com">
+                <label for="username">Gamer Tag (Usuario)</label>
+                <input type="text" name="username" id="username" autocomplete="username" required value="<?= htmlspecialchars($old['username']) ?>" placeholder="Ej: Slayer99">
             </div>
 
-            <!-- género favorito  -->
             <div class="form-group">
-                <label>Género Favorito</label>
-                <select name="genero_fav" class="form-group input">
-                    <option value="Acción">Acción</option>
-                    <option value="RPG">RPG / Rol</option>
-                    <option value="Aventura">Aventura</option>
-                    <option value="Shooter">Shooter</option>
-                    <option value="Estrategia">Estrategia</option>
-                    <option value="Terror">Terror</option>
-                    <option value="Indie">Indie</option>
-                    <option value="Plataformas">Plataformas</option>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" autocomplete="email" required placeholder="tu@email.com" value="<?= htmlspecialchars($old['email']) ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="genero_fav">Género Favorito</label>
+                <select name="genero_fav" id="genero_fav" class="form-group input">
+                    <option value="Acción" <?= $old['genero_fav'] == 'Acción' ? 'selected' : '' ?>>Acción</option>
+                    <option value="RPG" <?= $old['genero_fav'] == 'RPG' ? 'selected' : '' ?>>RPG / Rol</option>
+                    <option value="Aventura" <?= $old['genero_fav'] == 'Aventura' ? 'selected' : '' ?>>Aventura</option>
+                    <option value="Shooter" <?= $old['genero_fav'] == 'Shooter' ? 'selected' : '' ?>>Shooter</option>
+                    <option value="Estrategia" <?= $old['genero_fav'] == 'Estrategia' ? 'selected' : '' ?>>Estrategia</option>
+                    <option value="Terror" <?= $old['genero_fav'] == 'Terror' ? 'selected' : '' ?>>Terror</option>
+                    <option value="Indie" <?= $old['genero_fav'] == 'Indie' ? 'selected' : '' ?>>Indie</option>
+                    <option value="Plataformas" <?= $old['genero_fav'] == 'Plataformas' ? 'selected' : '' ?>>Plataformas</option>
                 </select>
             </div>
-            <!-- contraseña -->
+
             <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" name="password" id="password" required placeholder="••••••••">
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" id="password" autocomplete="new-password" required placeholder="••••••••">
                 <div class="password-strength-wrapper">
                     <div id="strength-bar"></div>
                 </div>
                 <small id="strength-text"></small>
             </div>
 
-            <!-- confirmación de Contraseña -->
             <div class="form-group">
-                <label>Confirmar Contraseña</label>
-                <input type="password" name="confirm_password" required placeholder="Repite tu contraseña">
-
+                <label for="confirm_password">Confirmar Contraseña</label>
+                <input type="password" name="confirm_password" id="confirm_password" autocomplete="new-password" required placeholder="Repite tu contraseña">
             </div>
 
-    </div>
+            <button type="submit" class="btn-cta">REGISTRARME</button>
+        </form>
 
-    <button type="submit" class="btn-cta">REGISTRARME</button>
-    </form>
-
-    <p class="auth-footer">
-        ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
-    </p>
+        <p class="auth-footer">
+            ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
+        </p>
 
     </div>
 </main>
