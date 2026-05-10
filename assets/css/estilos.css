@@ -416,3 +416,51 @@ main {
     opacity: 0.7;
     text-decoration: underline;
 }
+
+/* --- ESTILOS BARRA DE SEGURIDAD --- */
+.password-strength-wrapper {
+    width: 100%;
+    background-color: var(--borde); /* Color de fondo de la barra vacía */
+    height: 6px;
+    border-radius: 10px;
+    margin-top: 8px;
+    overflow: hidden; /* Para que la barra interna no se salga de los bordes */
+}
+
+#strength-bar {
+    height: 100%;
+    width: 0%;
+    transition: all 0.4s ease; /* Movimiento suave al crecer */
+}
+
+#strength-text {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* --- ESTILOS DE ALERTAS Y FEEDBACK --- */
+.alert-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+/* Variante para errores (Rojo suave tipo Gamer) */
+.alert-message.error {
+    background: rgba(255, 75, 75, 0.1);
+    color: #ff4b4b;
+    border-color: rgba(255, 75, 75, 0.3);
+}
+
+/* Variante para éxito (Verde esmeralda) */
+.alert-message.success {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border-color: rgba(76, 175, 80, 0.3);
+}
