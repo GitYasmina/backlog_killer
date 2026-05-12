@@ -6,6 +6,7 @@ require_once 'db.php';
 $id_usuario = $_SESSION['user_id'];
 $id_api = $_POST['id_api'];
 $titulo = $_POST['titulo'];
+$imagen = $_POST['imagen']?? '';
 
 try {
     // miramos si el juego ya existe en nuestra tabla 'videojuegos'
@@ -15,8 +16,8 @@ try {
 
     if (!$juego) {
         // si no existe, lo creamos y obtenemos su id
-        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero) VALUES (?, ?, 'Acción')");
-        $ins->execute([$id_api, $titulo]);
+        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero, imagen) VALUES (?, ?, 'Acción', ?)");
+        $ins->execute([$id_api, $titulo, $imagen]);
         $id_vj = $conexion->lastInsertId();
     } else {
         $id_vj = $juego['id'];

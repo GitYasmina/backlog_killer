@@ -34,12 +34,12 @@ function buscar() {
 }
 
 // esta función enviará el juego a PHP para guardarlo
-function añadir(idApi, titulo) {
+function añadir(idApi, titulo, imagen) {
     // enviamos los datos al servidor usando POST
     fetch('../app/add_game.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo)
+        body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo) + '&imagen=' + encodeURIComponent(imagen)
     })
     .then(res => res.json())
     .then(datos => {
