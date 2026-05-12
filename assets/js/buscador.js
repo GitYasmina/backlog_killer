@@ -34,11 +34,21 @@ function buscar() {
 }
 
 // esta función enviará el juego a PHP para guardarlo
-function añadir(id, titulo) {
-    // por ahora, solo lanzamos un aviso con el nombre del juego y su ID
-    alert("Has elegido: " + titulo + " (ID: " + id + ")");
-    
-    //haremos la llamada a PHP para guardar el juego en la base de datos del usuario
+function añadir(idApi, titulo) {
+    // enviamos los datos al servidor usando POST
+    fetch('../app/add_game.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo)
+    })
+    .then(res => res.json())
+    .then(datos => {
+        if (datos.status === 'success') {
+            alert("¡" + titulo + " guardado en tu biblioteca!");
+        } else {
+            alert("Este juego ya lo tienes o hubo un error.");
+        }
+    });
 }
 
 // escuchamos cuando el usuario suelta una tecla en el input
