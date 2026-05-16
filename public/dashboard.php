@@ -76,8 +76,10 @@ $stats = $stmt->fetch();
                             <div class="card-actions">
                                 <?php if ($juego['estado'] !== 'pendiente'): ?>
                                     <div class="progress-container">
-                                        <div class="progress-bar" style="width: <?= $juego['progreso'] ?>%"></div>
-                                        <span class="progress-text"><?= $juego['progreso'] ?>% completado</span>
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-bar-fill" style="width: <?= (int)$juego['progreso'] ?>%"></div>
+                                        </div>
+                                        <span class="progress-text"><?= (int)$juego['progreso'] ?>% completado</span>
                                     </div>
                                 <?php endif; ?>
 
