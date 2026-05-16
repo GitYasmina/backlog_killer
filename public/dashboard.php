@@ -51,7 +51,7 @@ $stats = $stmt->fetch();
             <?php
             // traemos los últimos 6 juegos añadidos por el usuario con su estado
             $stmt = $conexion->prepare("
-                SELECT v.titulo, v.imagen_url, v.genero, ej.estado 
+                SELECT v.titulo, v.imagen_url, v.genero, ej.estado, ej.id_videojuego 
                 FROM estados_juego ej
                 JOIN videojuegos v ON ej.id_videojuego = v.id
                 WHERE ej.id_usuario = ?
@@ -73,6 +73,18 @@ $stats = $stmt->fetch();
                             <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
                             <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
                             <span class="status-badge <?= $juego['estado'] ?>"><?= ucfirst($juego['estado']) ?></span>
+                            <div class="card-actions">
+                                <?php if ($juego['estado'] === 'pendiente'): ?>
+                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-play" title="Empezar a jugar">🎮</button>
+                                <?php $_SESSION['user_id'];
+                                endif; ?>
+
+                                <?php if ($juego['estado'] === 'en_progreso'): ?>
+                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-check" title="Marcar como terminado">✅</button>
+                                <?php endif; ?>
+
+                                <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'eliminar')" class="btn-action-delete" title="Eliminar de la biblioteca">🗑️</button>
+                            </div>
                         </div>
                     </div>
             <?php endforeach;
@@ -80,5 +92,5 @@ $stats = $stmt->fetch();
         </div>
     </section>
 </main>
-
+<script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>
