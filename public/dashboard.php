@@ -51,7 +51,7 @@ $stats = $stmt->fetch();
             <?php
             // traemos los últimos 6 juegos añadidos por el usuario con su estado
             $stmt = $conexion->prepare("
-                SELECT v.titulo, v.imagen_url, v.genero, ej.estado, ej.id_videojuego, ej.progreso
+                SELECT v.titulo, v.imagen_url, v.genero, ej.estado, ej.id_videojuego, ej.horas_jugadas, v.duracion_estimada_horas
                 FROM estados_juego ej
                 JOIN videojuegos v ON ej.id_videojuego = v.id
                 WHERE ej.id_usuario = ?
@@ -66,39 +66,45 @@ $stats = $stmt->fetch();
                     <a href="buscar_juego.php">¡Empieza a añadir tus joyas!</a>
                 </div>
                 <?php else:
-                foreach ($juegos as $juego): ?>
+                foreach ($juegos as $juego):
+                    // calculo del porcentaje automáticamente en PHP (evitando dividir entre cero)
+                    $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
+                    $porcentaje = round(($juego['horas_jugadas'] / $horas_totales) * 100);
+                    if ($porcentaje > 100) $porcentaje = 100; // Por si se pasa
+                ?>
                     <div class="game-card">
-                        <img src="<?= $juego['imagen_url'] ?: '../assets/img/no-image.png' ?>" class="game-poster-dash">
+                        <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" class="game-poster-dash" alt="Portada">
                         <div class="game-info">
                             <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
                             <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
                             <span class="status-badge <?= $juego['estado'] ?>"><?= ucfirst($juego['estado']) ?></span>
-                            <div class="card-actions">
-                                <?php if ($juego['estado'] !== 'pendiente'): ?>
-                                    <div class="progress-container">
-                                        <div class="progress-bar-bg">
-                                            <div class="progress-bar-fill" style="width: <?= (int)$juego['progreso'] ?>%"></div>
-                                        </div>
-                                        <span class="progress-text"><?= (int)$juego['progreso'] ?>% completado</span>
+
+                            <?php if ($juego['estado'] !== 'pendiente'): ?>
+                                <div class="progress-container">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: <?= $porcentaje ?>%"></div>
                                     </div>
+                                    <span class="progress-text"><?= $juego['horas_jugadas'] ?>h de <?= $horas_totales ?>h completadas (<?= $porcentaje ?>%)</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="card-actions">
+                                <?php if ($juego['estado'] === 'pendiente'): ?>
+                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-play" title="Empezar a jugar">🎮</button>
                                 <?php endif; ?>
 
-                                <div class="card-actions">
-                                    <?php if ($juego['estado'] === 'pendiente'): ?>
-                                        <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-play" title="Empezar a jugar">🎮</button>
-                                    <?php endif; ?>
+                                <?php if ($juego['estado'] === 'en_progreso'): ?>
+                                    <button onclick="cambiarPorcentaje(<?= $juego['id_videojuego'] ?>)" class="btn-action-edit" title="Actualizar progreso">📝</button>
+                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-check" title="Marcar como terminado">✅</button>
+                                <?php endif; ?>
 
-                                    <?php if ($juego['estado'] === 'en_progreso'): ?>
-                                        <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-check" title="Marcar como terminado">✅</button>
-                                    <?php endif; ?>
-
-                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'eliminar')" class="btn-action-delete" title="Eliminar de la biblioteca">🗑️</button>
-                                </div>
+                                <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'eliminar')" class="btn-action-delete" title="Eliminar de la biblioteca">🗑️</button>
                             </div>
                         </div>
-                <?php endforeach;
-            endif; ?>
                     </div>
+            <?php endforeach;
+            endif; ?>
+        </div>
     </section>
 </main>
 <script src="../assets/js/dashboard.js"></script>
