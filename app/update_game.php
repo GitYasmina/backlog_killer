@@ -34,9 +34,22 @@ try {
         $stmt->execute([$id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success', 'message' => '¡A jugar!']);
         
+    } else if ($accion === 'actualizar_horas') {
+        //guardamos las horas reales que el usuario escribe en el prompt
+        $horas = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
+        
+        $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = ? WHERE id_usuario = ? AND id_videojuego = ?");
+        $stmt->execute([$horas, $id_usuario, $id_videojuego]);
+        echo json_encode(['status' => 'success']);
+
     } else if ($accion === 'terminado') {
-        // pasamos el juego a 'terminado'
-        $stmt = $conexion->prepare("UPDATE estados_juego SET estado = 'terminado' WHERE id_usuario = ? AND id_videojuego = ?");
+        // al pasarlo a terminado, igualamos las horas_jugadas a duracion_estimada_horas automáticamente
+        $stmt = $conexion->prepare("
+            UPDATE estados_juego ej
+            JOIN videojuegos v ON ej.id_videojuego = v.id
+            SET ej.estado = 'terminado', ej.horas_jugadas = v.duracion_estimada_horas 
+            WHERE ej.id_usuario = ? AND ej.id_videojuego = ?
+        ");
         $stmt->execute([$id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success', 'message' => '¡Juego completado!']);
     }
