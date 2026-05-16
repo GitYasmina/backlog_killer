@@ -55,7 +55,7 @@ $stats = $stmt->fetch();
                 FROM estados_juego ej
                 JOIN videojuegos v ON ej.id_videojuego = v.id
                 WHERE ej.id_usuario = ?
-                ORDER BY v.id DESC LIMIT 6
+                ORDER BY ej.id_videojuego DESC LIMIT 6
             ");
             $stmt->execute([$user_id]);
             $juegos = $stmt->fetchAll();

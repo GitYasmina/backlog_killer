@@ -1,54 +1,53 @@
-const apiKey = 'aef2891fedb5434d9e1e3dd95e29f11d';
+const apiKey = "aef2891fedb5434d9e1e3dd95e29f11d";
 
-// esta función se activa cada vez que escribimos en el buscador
+// se activa cada vez que escribimos en el buscador
 function buscar() {
-    var texto = document.getElementById('game-search').value;
-    var contenedor = document.getElementById('search-results');
+  var texto = document.getElementById("game-search").value;
+  var contenedor = document.getElementById("search-results");
 
-    // si hay menos de 3 letras, no hacemos nada
-    if (texto.length < 3) return;
+  // si hay menos de 3 letras, no hace nada
+  if (texto.length < 3) return;
 
-    // conexion a la API de RAWG para buscar juegos por nombre
-    fetch('https://api.rawg.io/api/games?key=' + apiKey + '&search=' + texto + '&page_size=6')
-        .then(res => res.json())
-        .then(datos => {
-            contenedor.innerHTML = ""; // limpiamos resultados anteriores
+  // conexión a la API de RAWG
+  fetch("https://api.rawg.io/api/games?key=" + apiKey + "&search=" + texto + "&page_size=6")
+    .then((res) => res.json())
+    .then((datos) => {
+      contenedor.innerHTML = ""; // Limpiamos resultados anteriores
 
-            // recorremos los resultados y los mostramos en tarjetitas
-            datos.results.forEach(juego => {
-                // creamos el diseño de la tarjetita
-                var card = `
-                    <div class="game-card">
-                        <img src="${juego.background_image}" style="width:100%">
-                        <div class="game-info">
-                            <h3>${juego.name}</h3>
-                            <button onclick="añadir('${juego.id}', '${juego.name}')" class="btn-add">
-                                Añadir a mi lista
-                            </button>
-                        </div>
-                    </div>
-                `;
-                contenedor.innerHTML += card;
-            });
-        });
-}
-
-// esta función enviará el juego a PHP para guardarlo
-function añadir(idApi, titulo, imagen) {
-    // enviamos los datos al servidor usando POST
-    fetch('../app/add_game.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo) + '&imagen=' + encodeURIComponent(imagen)    })
-    .then(res => res.json())
-    .then(datos => {
-        if (datos.status === 'success') {
-            alert("¡" + titulo + " guardado en tu biblioteca!");
-        } else {
-            alert("Este juego ya lo tienes o hubo un error.");
-        }
+      // recorremos los resultados para las tarjetas
+      datos.results.forEach((juego) => {
+        var card = `
+        <div class="game-card">
+            <img src="${juego.background_image || "../assets/img/no-image.png"}" class="game-poster">
+            <div class="game-info">
+                <h3>${juego.name}</h3>
+                <button onclick="añadir('${juego.id}', '${juego.name.replace(/'/g, "")}', '${juego.background_image}')" class="btn-add">
+                    Añadir a mi lista
+                </button>
+            </div>
+        </div>
+    `;
+        contenedor.innerHTML += card;
+      });
     });
 }
 
-// escuchamos cuando el usuario suelta una tecla en el input
-document.getElementById('game-search').addEventListener('keyup', buscar);
+// envía los datos elegidos a PHP para guardarlos en la base de datos
+function añadir(idApi, titulo, imagen) {
+  fetch("../app/add_game.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "id_api=" + idApi + "&titulo=" + encodeURIComponent(titulo) + "&imagen=" + encodeURIComponent(imagen),
+  })
+    .then((res) => res.json())
+    .then((datos) => {
+      if (datos.status === "success") {
+        alert("¡" + titulo + " guardado en tu biblioteca!");
+      } else {
+        alert("Este juego ya lo tienes o hubo un error.");
+      }
+    });
+}
+
+// escucha las pulsaciones de teclas en el input de búsqueda
+document.getElementById("game-search").addEventListener("keyup", buscar);
