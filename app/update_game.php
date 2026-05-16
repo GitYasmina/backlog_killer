@@ -36,10 +36,10 @@ try {
         
     } else if ($accion === 'actualizar_horas') {
         //guardamos las horas reales que el usuario escribe en el prompt
-        $horas = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
+        $horas_nuevas = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
         
-        $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = ? WHERE id_usuario = ? AND id_videojuego = ?");
-        $stmt->execute([$horas, $id_usuario, $id_videojuego]);
+        $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = horas_jugadas + ? WHERE id_usuario = ? AND id_videojuego = ?");
+        $stmt->execute([$horas_nuevas, $id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success']);
 
     } else if ($accion === 'terminado') {

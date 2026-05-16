@@ -22,22 +22,36 @@ function actualizarJuego(idVideojuego, accion) {
     });
 }
 
-// función para pedir las horas reales jugadas al usuario
+// abre el modal de horas y pone el id del juego en un input oculto para usarlo luego al enviar el formulario
 function cambiarHoras(idVideojuego) {
-    let nuevasHoras = prompt("¿Cuántas horas totales llevas jugadas a este juego?:");
+    document.getElementById('modal-juego-id').value = idVideojuego;
+    document.getElementById('modal-horas-input').value = '';
+    document.getElementById('modal-horas').classList.add('active');
+}
 
-    // si cancela o acepta en blanco, salimos
-    if (nuevasHoras === null || nuevasHoras.trim() === "") return;
+// cierra el modal quitando la clase active
+function cerrarModal() {
+    document.getElementById('modal-horas').classList.remove('active');
+}
+
+// recoge los datos del modal y los envía por Fetch a PHP
+function enviarHorasModal() {
+    const idVideojuego = document.getElementById('modal-juego-id').value;
+    let nuevasHoras = document.getElementById('modal-horas-input').value;
+
+    if (nuevasHoras.trim() === "") return;
 
     nuevasHoras = parseInt(nuevasHoras);
 
-    // validamos que sea un número entero positivo
-    if (isNaN(nuevasHoras) || nuevasHoras < 0) {
-        alert("Por favor, introduce un número de horas válido.");
+    if (isNaN(nuevasHoras) || nuevasHoras <= 0) {
+        alert("Por favor, introduce un número de horas mayor que cero.");
         return;
     }
 
-    // envio de datos a PHP para actualizar las horas en la base de datos
+    // cerramos el modal visualmente antes de recargar
+    cerrarModal();
+
+    // enviamos los datos al PHP para actualizar las horas jugadas de este juego
     fetch('../app/update_game.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -46,7 +60,7 @@ function cambiarHoras(idVideojuego) {
     .then(res => res.json())
     .then(datos => {
         if (datos.status === 'success') {
-            location.reload(); // refrescamos para ver la barra actualizada
+            location.reload();
         } else {
             alert(datos.message);
         }

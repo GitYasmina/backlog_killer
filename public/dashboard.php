@@ -94,7 +94,7 @@ $stats = $stmt->fetch();
                                 <?php endif; ?>
 
                                 <?php if ($juego['estado'] === 'en_progreso'): ?>
-                                    <button onclick="cambiarPorcentaje(<?= $juego['id_videojuego'] ?>)" class="btn-action-edit" title="Actualizar progreso">📝</button>
+                                    <button onclick="cambiarHoras(<?= $juego['id_videojuego'] ?>)" class="btn-action-edit" title="Actualizar progreso">📝</button>
                                     <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-check" title="Marcar como terminado">✅</button>
                                 <?php endif; ?>
 
@@ -107,5 +107,23 @@ $stats = $stmt->fetch();
         </div>
     </section>
 </main>
+<div id="modal-horas" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Registrar Sesión de Juego 🎮</h3>
+        <p>¿Cuántas horas has jugado en esta sesión? Se sumarán a tu progreso actual.</p>
+        
+        <input type="hidden" id="modal-juego-id">
+        
+        <div class="modal-input-group">
+            <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 2" autofocus>
+            <span>horas</span>
+        </div>
+
+        <div class="modal-actions">
+            <button onclick="cerrarModal()" class="btn-modal-cancel">Cancelar</button>
+            <button onclick="enviarHorasModal()" class="btn-modal-save">Guardar progreso</button>
+        </div>
+    </div>
+</div>
 <script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>
