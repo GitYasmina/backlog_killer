@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
+header('Content-Type: application/json');
 
 //recogemos lo que viene del js
 $id_usuario = $_SESSION['user_id'];
@@ -16,11 +17,20 @@ try {
 
     if (!$juego) {
         // si no existe, lo creamos y obtenemos su id
-        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero, imagen) VALUES (?, ?, 'Acción', ?)");
+        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero, imagen_url) VALUES (?, ?, 'Acción', ?)");
         $ins->execute([$id_api, $titulo, $imagen]);
         $id_vj = $conexion->lastInsertId();
     } else {
         $id_vj = $juego['id'];
+    }
+
+    // miramos si el usuario ya tiene este juego en su biblioteca
+    $check = $conexion->prepare("SELECT * FROM estados_juego WHERE id_usuario = ? AND id_videojuego = ?");
+    $check->execute([$id_usuario, $id_vj]);
+    
+    if ($check->rowCount() > 0) {
+        echo json_encode(['status' => 'exists']);
+        exit;
     }
 
     // lo metemos en la lista personal del usuario (Backlog)

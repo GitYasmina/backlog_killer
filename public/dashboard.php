@@ -51,11 +51,11 @@ $stats = $stmt->fetch();
             <?php
             // traemos los últimos 6 juegos añadidos por el usuario con su estado
             $stmt = $conexion->prepare("
-                SELECT v.titulo, v.genero, ej.estado 
+                SELECT v.titulo, v.imagen_url, v.genero, ej.estado 
                 FROM estados_juego ej
                 JOIN videojuegos v ON ej.id_videojuego = v.id
                 WHERE ej.id_usuario = ?
-                ORDER BY ej.id_videojuego DESC LIMIT 6
+                ORDER BY v.id DESC LIMIT 6
             ");
             $stmt->execute([$user_id]);
             $juegos = $stmt->fetchAll();
@@ -65,16 +65,17 @@ $stats = $stmt->fetch();
                     <p>Aún no tienes juegos en tu biblioteca.</p>
                     <a href="buscar_juego.php">¡Empieza a añadir tus joyas!</a>
                 </div>
-            <?php else: 
+                <?php else:
                 foreach ($juegos as $juego): ?>
                     <div class="game-card">
+                        <img src="<?= $juego['imagen_url'] ?: '../assets/img/no-image.png' ?>" class="game-poster-dash">
                         <div class="game-info">
                             <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
                             <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
                             <span class="status-badge <?= $juego['estado'] ?>"><?= ucfirst($juego['estado']) ?></span>
                         </div>
                     </div>
-                <?php endforeach; 
+            <?php endforeach;
             endif; ?>
         </div>
     </section>

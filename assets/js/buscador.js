@@ -39,8 +39,7 @@ function añadir(idApi, titulo, imagen) {
     fetch('../app/add_game.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo) + '&imagen=' + encodeURIComponent(imagen)
-    })
+body: 'id_api=' + idApi + '&titulo=' + encodeURIComponent(titulo) + '&imagen=' + encodeURIComponent(imagen)    })
     .then(res => res.json())
     .then(datos => {
         if (datos.status === 'success') {
