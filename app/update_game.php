@@ -42,7 +42,7 @@ try {
         $stmt->execute([$horas_nuevas, $id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success']);
 
-    } else if ($accion === 'terminado') {
+   } else if ($accion === 'terminado') {
         // al pasarlo a terminado, igualamos las horas_jugadas a duracion_estimada_horas automáticamente
         $stmt = $conexion->prepare("
             UPDATE estados_juego ej
@@ -51,6 +51,22 @@ try {
             WHERE ej.id_usuario = ? AND ej.id_videojuego = ?
         ");
         $stmt->execute([$id_usuario, $id_videojuego]);
+
+        // comprobamos si al terminar este juego se desbloquea algún logro nuevo
+        require_once 'logros_helper.php';
+        $nuevos_logros = comprobarLogros($conexion, $id_usuario, 'primer_terminado');
+
+        // si se desbloqueó un logro, lo inyectamos en la respuesta JSON
+        if (!empty($nuevos_logros)) {
+            echo json_encode([
+                'status' => 'success', 
+                'message' => '¡Juego completado!',
+                'logro' => $nuevos_logros[0]
+            ]);
+            exit();
+        }
+        
+
         echo json_encode(['status' => 'success', 'message' => '¡Juego completado!']);
     }
 } catch (Exception $e) {

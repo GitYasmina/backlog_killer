@@ -29,7 +29,15 @@ function comprobarLogros($conexion, $user_id, $tipo_accion) {
             }
         }
         
-        // aquí podremos añadir más condiciones como 'primer_terminado' más adelante]
+        // verificación para cuando se termina un juego
+        if ($tipo_accion === 'primer_terminado') {
+            // Contamos si tiene al menos 1 juego con estado 'terminado'
+            $check = $conexion->prepare("SELECT COUNT(*) FROM estados_juego WHERE id_usuario = ? AND estado = 'terminado'");
+            $check->execute([$user_id]);
+            if ($check->fetchColumn() >= 1) {
+                $otorgar = true;
+            }
+        }
 
         // si cumple los requisitos, lo registramos en la tabla intermedia
         if ($otorgar) {

@@ -14,7 +14,12 @@ function actualizarJuego(idVideojuego, accion) {
     .then(res => res.json())
     .then(datos => {
         if (datos.status === 'success') {
-            // si  PHP dice que ok, refrescamos la página para ver los cambios
+            // Si la respuesta trae un logro, mostramos el alert PRIMERO
+            if (datos.logro) {
+                alert("🏆 ¡LOGRO DESBLOQUEADO! 🏆\n\nHas conseguido: " + datos.logro);
+            }
+            
+            // Ahora la recarga se ejecuta SOLO cuando el usuario pulsa "Aceptar" en el alert
             location.reload();
         } else {
             alert(datos.message || 'Hubo un error al actualizar el juego');
@@ -59,8 +64,9 @@ function enviarHorasModal() {
     })
     .then(res => res.json())
     .then(datos => {
+        console.log("Respuesta del servidor:", datos);
         if (datos.status === 'success') {
-            location.reload();
+            // location.reload();
         } else {
             alert(datos.message);
         }
