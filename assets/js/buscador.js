@@ -16,20 +16,24 @@ function buscar() {
 
       // recorremos los resultados para las tarjetas
       datos.results.forEach((juego) => {
-        // capturamos el primer género y la primera plataforma de forma segura
         var generoReal = juego.genres && juego.genres.length > 0 ? juego.genres[0].name : "Desconocido";
-        var duracionReal = juego.playtime || 30; // Si viene a 0, le damos 30h estimadas por defecto
+        var duracionReal = juego.playtime || 30;
 
-        // escapamos comillas simples en el título para que no rompa el onclick del HTML
-        var tituloEscapado = juego.name.replace(/'/g, "\\'");
-
+        // creamos la tarjeta guardando las variables de forma segura en atributos data-*
         var card = `
         <div class="game-card">
             <img src="${juego.background_image || "../assets/img/no-image.png"}" class="game-poster">
             <div class="game-info">
                 <h3>${juego.name}</h3>
-                <span class="game-tag">${generoReal} | ${plataformaReal}</span>
-                <button onclick="añadir('${juego.id}', '${tituloEscapado}', '${juego.background_image}', '${generoReal}', ${duracionReal}')" class="btn-add">
+                <span class="game-tag">${generoReal}</span>
+                <button 
+                    class="btn-add"
+                    data-id="${juego.id}"
+                    data-titulo="${juego.name.replace(/"/g, '&quot;')}"
+                    data-imagen="${juego.background_image || ''}"
+                    data-genero="${generoReal}"
+                    data-duracion="${duracionReal}"
+                    onclick="manejadorAñadir(this)">
                     Añadir a mi lista
                 </button>
             </div>
@@ -40,7 +44,19 @@ function buscar() {
     });
 }
 
-// recibe género, duración y plataforma, y se los envía por POST a PHP
+// función intermedia que recupera los datos del botón de forma nativa y segura
+function manejadorAñadir(boton) {
+  const idApi = boton.getAttribute('data-id');
+  const titulo = boton.getAttribute('data-titulo');
+  const imagen = boton.getAttribute('data-imagen');
+  const genero = boton.getAttribute('data-genero');
+  const duracion = boton.getAttribute('data-duracion');
+
+  // llamamos a la función de envío pasándole los datos limpios
+  añadir(idApi, titulo, imagen, genero, duracion);
+}
+
+// funcion que envía los datos recogidos por POST a PHP
 function añadir(idApi, titulo, imagen, genero, duracion) {
   fetch("../app/add_game.php", {
     method: "POST",
