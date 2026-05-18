@@ -18,7 +18,6 @@ function buscar() {
       datos.results.forEach((juego) => {
         // capturamos el primer género y la primera plataforma de forma segura
         var generoReal = juego.genres && juego.genres.length > 0 ? juego.genres[0].name : "Desconocido";
-        var plataformaReal = juego.platforms && juego.platforms.length > 0 ? juego.platforms[0].platform.name : "PC";
         var duracionReal = juego.playtime || 30; // Si viene a 0, le damos 30h estimadas por defecto
 
         // escapamos comillas simples en el título para que no rompa el onclick del HTML
@@ -30,7 +29,7 @@ function buscar() {
             <div class="game-info">
                 <h3>${juego.name}</h3>
                 <span class="game-tag">${generoReal} | ${plataformaReal}</span>
-                <button onclick="añadir('${juego.id}', '${tituloEscapado}', '${juego.background_image}', '${generoReal}', ${duracionReal}, '${plataformaReal}')" class="btn-add">
+                <button onclick="añadir('${juego.id}', '${tituloEscapado}', '${juego.background_image}', '${generoReal}', ${duracionReal}')" class="btn-add">
                     Añadir a mi lista
                 </button>
             </div>
@@ -42,7 +41,7 @@ function buscar() {
 }
 
 // recibe género, duración y plataforma, y se los envía por POST a PHP
-function añadir(idApi, titulo, imagen, genero, duracion, plataforma) {
+function añadir(idApi, titulo, imagen, genero, duracion) {
   fetch("../app/add_game.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -50,8 +49,7 @@ function añadir(idApi, titulo, imagen, genero, duracion, plataforma) {
           "&titulo=" + encodeURIComponent(titulo) + 
           "&imagen=" + encodeURIComponent(imagen) +
           "&genero=" + encodeURIComponent(genero) +
-          "&duracion=" + duracion +
-          "&plataforma=" + encodeURIComponent(plataforma),
+          "&duracion=" + duracion,
   })
     .then((res) => res.json())
     .then((datos) => {

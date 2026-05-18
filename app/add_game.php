@@ -16,7 +16,6 @@ $titulo = $_POST['titulo'] ?? null;
 $imagen = $_POST['imagen'] ?? '';
 $genero = $_POST['genero'] ?? 'Desconocido'; //recoge el género real de la API
 $duracion = isset($_POST['duracion']) ? (int)$_POST['duracion'] : 30; // recoge las horas estimadas de la API
-$plataforma = (!empty($_POST['plataforma']) && $_POST['plataforma'] !== 'undefined') ? $_POST['plataforma'] : 'PC';
 
 if (!$id_api || !$titulo) {
     echo json_encode(['status' => 'error', 'message' => 'Faltan datos obligatorios']);
@@ -31,8 +30,8 @@ try {
 
     if (!$juego) {
         // insertamos las variables reales de género y duración estimada en tu columna original
-        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero, imagen_url, duracion_estimada_horas, plataforma) VALUES (?, ?, ?, ?, ?, ?)");
-        $ins->execute([$id_api, $titulo, $genero, $imagen, $duracion, $plataforma]);
+        $ins = $conexion->prepare("INSERT INTO videojuegos (id_api, titulo, genero, imagen_url, duracion_estimada_horas) VALUES (?, ?, ?, ?, ?)");
+        $ins->execute([$id_api, $titulo, $genero, $imagen, $duracion]);
         $id_vj = $conexion->lastInsertId();
     } else {
         $id_vj = $juego['id'];
