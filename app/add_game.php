@@ -49,6 +49,19 @@ try {
     // insertamos en la lista personal guardando el estado 'pendiente', las horas_jugadas a 0 y la plataforma real
     $stmt = $conexion->prepare("INSERT INTO estados_juego (id_usuario, id_videojuego, estado, horas_jugadas) VALUES (?, ?, 'pendiente', 0)");
     $stmt->execute([$id_usuario, $id_vj]);
+    require_once 'logros_helper.php';
+    
+    // comprobamos si el usuario cumple las condiciones para el logro 'primer_juego'
+    $nuevos_logros = comprobarLogros($conexion, $id_usuario, 'primer_juego');
+
+    // si ha saltado un logro nuevo, lo incluimos en la respuesta de éxito
+    if (!empty($nuevos_logros)) {
+        echo json_encode([
+            'status' => 'success',
+            'logro' => $nuevos_logros[0] // mandamos el título del logro (ej: 'Cazador de Sombras ⚔️')
+        ]);
+        exit();
+    }
 
     echo json_encode(['status' => 'success']);
 } catch (Exception $e) {
