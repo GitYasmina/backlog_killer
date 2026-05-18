@@ -4,7 +4,6 @@ function girarRuleta() {
     const filtroGenero = document.getElementById('genero-ruleta');
     const filtroTiempo = document.getElementById('tiempo-ruleta');
 
-    console.log("Todos los juegos cargados desde PHP:", juegosPendientes);
 
     const generoSeleccionado = filtroGenero ? filtroGenero.value : 'todos';
     const tiempoSeleccionado = filtroTiempo ? filtroTiempo.value : 'cualquiera';
@@ -15,7 +14,6 @@ function girarRuleta() {
         juegosFiltrados = juegosPendientes.filter(juego => juego.genero === generoSeleccionado);
     }
 
-    console.log("Juegos tras filtrar por género:", juegosFiltrados);
 
     // filtro por duración: si el usuario ha elegido una duración específica, filtramos el array para quedarnos solo con esos juegos
     if (tiempoSeleccionado !== 'cualquiera') {
