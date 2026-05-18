@@ -14,12 +14,11 @@ function actualizarJuego(idVideojuego, accion) {
     .then(res => res.json())
     .then(datos => {
         if (datos.status === 'success') {
-            // Si la respuesta trae un logro, mostramos el alert PRIMERO
+            // evaluamos si el backend nos devolvió un logro desbloqueado
             if (datos.logro) {
                 alert("🏆 ¡LOGRO DESBLOQUEADO! 🏆\n\nHas conseguido: " + datos.logro);
             }
-            
-            // Ahora la recarga se ejecuta SOLO cuando el usuario pulsa "Aceptar" en el alert
+            // refrescamos la página de forma segura después de cerrar el modal del alert
             location.reload();
         } else {
             alert(datos.message || 'Hubo un error al actualizar el juego');
@@ -64,9 +63,15 @@ function enviarHorasModal() {
     })
     .then(res => res.json())
     .then(datos => {
-        console.log("Respuesta del servidor:", datos);
         if (datos.status === 'success') {
-            // location.reload();
+            // si la suma de horas provocó un autocompletado con logro
+            if (datos.logro) {
+                alert("🏆 ¡LOGRO DESBLOQUEADO! 🏆\n\nHas conseguido: " + datos.logro);
+            } else if (datos.message) {
+                // alerta informativa si se autocompletó el juego sin logro nuevo
+                alert(datos.message);
+            }
+            location.reload();
         } else {
             alert(datos.message);
         }
