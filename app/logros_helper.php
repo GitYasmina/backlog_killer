@@ -38,6 +38,25 @@ function comprobarLogros($conexion, $user_id, $tipo_accion) {
                 $otorgar = true;
             }
         }
+        // verificación para cuando escribe una reseña
+        if ($tipo_accion === 'primera_resena') {
+            // Comprobamos si tiene alguna reseña guardada (no nula y no vacía)
+            $check = $conexion->prepare("SELECT COUNT(*) FROM estados_juego WHERE id_usuario = ? AND resena IS NOT NULL AND resena != ''");
+            $check->execute([$user_id]);
+            if ($check->fetchColumn() >= 1) {
+                $otorgar = true;
+            }
+        }
+
+        // verificación para cuando sube de nivel
+        if ($tipo_accion === 'subir_nivel') {
+            // Comprobamos si el nivel del usuario es igual o mayor a 2
+            $check = $conexion->prepare("SELECT nivel FROM usuarios WHERE id = ?");
+            $check->execute([$user_id]);
+            if ($check->fetchColumn() >= 2) {
+                $otorgar = true;
+            }
+        }
 
         // si cumple los requisitos, lo registramos en la tabla intermedia
         if ($otorgar) {

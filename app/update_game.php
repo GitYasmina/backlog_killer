@@ -87,6 +87,12 @@ try {
         require_once 'logros_helper.php';
         $nuevos_logros = comprobarLogros($conexion, $id_usuario, 'primer_terminado');
 
+        // si el usuario ha escrito una reseña, comprobamos también los logros relacionados con reseñas
+        $logros_resena = comprobarLogros($conexion, $id_usuario, 'primera_resena');
+        if (!empty($logros_resena)) {
+            $nuevos_logros = array_merge($nuevos_logros, $logros_resena);
+        }
+
         if (!empty($nuevos_logros)) {
             echo json_encode([
                 'status' => 'success',

@@ -1,12 +1,13 @@
 <?php
 // función para procesar el acceso diario del usuario y dar experiencia
-function procesarCheckinDiario($conexion, $id_usuario) {
+function procesarCheckinDiario($conexion, $id_usuario)
+{
     // inicializamos las variables de control
     $resultado = [
         'mostrar_aviso' => false,
         'xp_ganada' => 20
     ];
-    
+
     $xp_para_subir = 100; // cada 100 puntos de XP se sube de nivel
 
     // consultamos los datos actuales del usuario
@@ -29,6 +30,10 @@ function procesarCheckinDiario($conexion, $id_usuario) {
         if ($nueva_xp >= $xp_para_subir) {
             $nueva_xp = $nueva_xp - $xp_para_subir;
             $nuevo_nivel++;
+
+            // comprobamos si el nuevo nivel desbloquea algún logro
+            require_once 'logros_helper.php';
+            comprobarLogros($conexion, $id_usuario, 'subir_nivel');
         }
 
         // actualizamos los datos en la base de datos
