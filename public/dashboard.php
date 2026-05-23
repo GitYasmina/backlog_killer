@@ -192,6 +192,43 @@ $juegos_completados = $stmt_completados->fetchAll();
         </div>
     </div>
 </div>
+<!-- valoracion y reseña -->
+<div id="modal-resena" class="modal-overlay">
+    <div class="modal-content">
+        <h3>¡Juego Completado! 🏆</h3>
+        <p>Deja tu valoración final para cerrar este ciclo de tu backlog.</p>
+        
+        <input type="hidden" id="modal-resena-juego-id">
+        
+        <!-- contenedor de estrellas de derecha a izquierda para la lógica CSS -->
+        <div class="selector-estrellas">
+            <input type="radio" id="estrella5" name="puntuacion" value="5">
+            <label for="estrella5" title="Excelente">★</label>
+            
+            <input type="radio" id="estrella4" name="puntuacion" value="4">
+            <label for="estrella4" title="Muy bueno">★</label>
+            
+            <input type="radio" id="estrella3" name="puntuacion" value="3">
+            <label for="estrella3" title="Bueno">★</label>
+            
+            <input type="radio" id="estrella2" name="puntuacion" value="2">
+            <label for="estrella2" title="Regular">★</label>
+            
+            <input type="radio" id="estrella1" name="puntuacion" value="1">
+            <label for="estrella1" title="Malo">★</label>
+        </div>
+
+        <div class="modal-input-group-textarea">
+            <label for="modal-comentario-input">Tu opinión (opcional):</label>
+            <textarea id="modal-comentario-input" rows="4" placeholder="¿Qué te ha parecido la historia, la jugabilidad...?"></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button onclick="cerrarModalResena()" class="btn-modal-cancel">Saltar</button>
+            <button onclick="enviarResenaModal()" class="btn-modal-save">Guardar reseña</button>
+        </div>
+    </div>
+</div>
 
 <script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>
