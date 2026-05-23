@@ -47,6 +47,17 @@ $stmt_completados = $conexion->prepare("
 ");
 $stmt_completados->execute([$user_id]);
 $juegos_completados = $stmt_completados->fetchAll();
+
+// 3. CONSULTA PARA EL CONTRATO SEMANAL ACTIVO DEL USUARIO
+$stmt_contrato = $conexion->prepare("
+    SELECT cs.id, cs.objetivo, cs.completado, cs.fecha_limite, v.titulo, v.imagen_url
+    FROM contratos_semanales cs
+    JOIN videojuegos v ON cs.id_videojuego = v.id
+    WHERE cs.id_usuario = ? AND cs.completado = 0 AND cs.fecha_limite >= CURDATE()
+    LIMIT 1
+");
+$stmt_contrato->execute([$user_id]);
+$contrato_activo = $stmt_contrato->fetch();
 ?>
 
 <main class="dashboard-container">
@@ -85,6 +96,33 @@ $juegos_completados = $stmt_completados->fetchAll();
     <section class="dashboard-actions">
         <a href="buscar_juego.php" class="btn-primary">➕ Añadir Juego</a>
         <a href="ruleta.php" class="btn-secondary">🎲 Backlog Killer</a>
+    </section>
+    <section class="seccion-contrato">
+        <h2>Contrato Semanal 📜</h2>
+        <p class="contrato-subtitulo">Gestiona tus micro-objetivos para mantener a raya la procrastinación.</p>
+
+        <?php if (!$contrato_activo): ?>
+            <!-- si el usuario no tiene metas fijadas -->
+            <div class="contrato-vacio-card">
+                <p>No tienes ningún objetivo estratégico firmado para esta semana.</p>
+                <button onclick="abrirModalContrato()" class="btn-primary">📜 Firmar Contrato Semanal</button>
+            </div>
+        <?php else: ?>
+            <!-- muestra el contrato neón personalizado -->
+            <div class="tarjeta-contrato-gamer">
+                <img src="<?= (!empty($contrato_activo['imagen_url'])) ? $contrato_activo['imagen_url'] : '../assets/img/no-image.png' ?>" class="contrato-poster" alt="Portada">
+                <div class="contrato-cuerpo">
+                    <span class="contrato-tag-juego"><?= htmlspecialchars($contrato_activo['titulo']) ?></span>
+                    <h3>🎯 Misión: <?= htmlspecialchars($contrato_activo['objetivo']) ?></h3>
+                    <p class="contrato-recompensa">💰 Recompensa: <strong>+30 XP</strong></p>
+                    <p class="contrato-fecha">⏳ Plazo: hasta el <?= date('d/m/Y', strtotime($contrato_activo['fecha_limite'])) ?></p>
+                </div>
+                <div class="contrato-acciones">
+                    <button onclick="completarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-check" title="¡Misión cumplida!">✅</button>
+                    <button onclick="cancelarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-delete" title="Romper contrato">🗑️</button>
+                </div>
+            </div>
+        <?php endif; ?>
     </section>
 
     <section class="games-section">
@@ -174,6 +212,7 @@ $juegos_completados = $stmt_completados->fetchAll();
     </section>
 </main>
 
+<!-- modal para registrar horas de juego -->
 <div id="modal-horas" class="modal-overlay">
     <div class="modal-content">
         <h3>Registrar Sesión de Juego 🎮</h3>
@@ -192,28 +231,28 @@ $juegos_completados = $stmt_completados->fetchAll();
         </div>
     </div>
 </div>
-<!-- valoracion y reseña -->
+<!-- modal valoracion y reseña -->
 <div id="modal-resena" class="modal-overlay">
     <div class="modal-content">
         <h3>¡Juego Completado! 🏆</h3>
         <p>Deja tu valoración final para cerrar este ciclo de tu backlog.</p>
-        
+
         <input type="hidden" id="modal-resena-juego-id">
-        
+
         <!-- contenedor de estrellas de derecha a izquierda para la lógica CSS -->
         <div class="selector-estrellas">
             <input type="radio" id="estrella5" name="puntuacion" value="5">
             <label for="estrella5" title="Excelente">★</label>
-            
+
             <input type="radio" id="estrella4" name="puntuacion" value="4">
             <label for="estrella4" title="Muy bueno">★</label>
-            
+
             <input type="radio" id="estrella3" name="puntuacion" value="3">
             <label for="estrella3" title="Bueno">★</label>
-            
+
             <input type="radio" id="estrella2" name="puntuacion" value="2">
             <label for="estrella2" title="Regular">★</label>
-            
+
             <input type="radio" id="estrella1" name="puntuacion" value="1">
             <label for="estrella1" title="Malo">★</label>
         </div>
@@ -226,6 +265,40 @@ $juegos_completados = $stmt_completados->fetchAll();
         <div class="modal-actions">
             <button onclick="cerrarModalResena()" class="btn-modal-cancel">Saltar</button>
             <button onclick="enviarResenaModal()" class="btn-modal-save">Guardar reseña</button>
+        </div>
+    </div>
+
+
+    <!-- modal para redactar el contrato semanal -->
+    <div id="modal-contrato" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Redactar Contrato Semanal ✍️</h3>
+            <p>Establece un objetivo a corto plazo para avanzar de forma constante.</p>
+
+            <div class="modal-input-group-vertical">
+                <label for="contrato-juego">¿Para qué juego activo es la misión?</label>
+                <select id="contrato-juego" class="select-ruleta-perfil">
+                    <?php if (empty($juegos_activos)): ?>
+                        <option value="">-- No tienes juegos activos --</option>
+                        <?php else:
+                        foreach ($juegos_activos as $ja):
+                            if ($ja['estado'] === 'en_progreso'): ?>
+                                <option value="<?= $ja['id_videojuego'] ?>"><?= htmlspecialchars($ja['titulo']) ?></option>
+                    <?php endif;
+                        endforeach;
+                    endif; ?>
+                </select>
+            </div>
+
+            <div class="modal-input-group-vertical">
+                <label for="contrato-objetivo">¿Cuál es tu meta específica?</label>
+                <input type="text" id="contrato-objetivo" placeholder="Ej: Superar el capítulo 3 / Limpiar la zona norte...">
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="cerrarModalContrato()" class="btn-modal-cancel">Cancelar</button>
+                <button onclick="enviarContratoModal()" class="btn-modal-save">Firmar Trato</button>
+            </div>
         </div>
     </div>
 </div>
