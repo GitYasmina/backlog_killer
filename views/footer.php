@@ -1,4 +1,3 @@
-<hr>
 <footer class="site-footer">
     <div class="footer-content">
         <p>Backlog Killer &copy; <?= date("Y"); ?> - Proyecto TFC</p>
