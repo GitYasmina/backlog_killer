@@ -27,17 +27,15 @@ try {
         $stmt = $conexion->prepare("DELETE FROM estados_juego WHERE id_usuario = ? AND id_videojuego = ?");
         $stmt->execute([$id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success', 'message' => 'Juego eliminado']);
-        
     } else if ($accion === 'progreso') {
         // pasamos el juego a 'en_progreso'
         $stmt = $conexion->prepare("UPDATE estados_juego SET estado = 'en_progreso' WHERE id_usuario = ? AND id_videojuego = ?");
         $stmt->execute([$id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success', 'message' => '¡A jugar!']);
-        
     } else if ($accion === 'actualizar_horas') {
         // guardamos las horas reales que el usuario escribe en el prompt
         $horas_nuevas = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
-        
+
         // sumamos las horas en la tabla intermedia
         $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = horas_jugadas + ? WHERE id_usuario = ? AND id_videojuego = ?");
         $stmt->execute([$horas_nuevas, $id_usuario, $id_videojuego]);
@@ -68,18 +66,22 @@ try {
             ]);
             exit();
         }
-        
-        echo json_encode(['status' => 'success']);
 
+        echo json_encode(['status' => 'success']);
     } else if ($accion === 'terminado') {
+
+        // recojemos la nota y la reseña que vienen desde el modal
+        $nota = (!empty($_POST['nota'])) ? (int)$_POST['nota'] : null;
+        $resena = (!empty($_POST['resena'])) ? trim($_POST['resena']) : null;
+
         // al pasarlo a terminado, igualamos las horas_jugadas a duracion_estimada_horas automáticamente
         $stmt = $conexion->prepare("
             UPDATE estados_juego ej
             JOIN videojuegos v ON ej.id_videojuego = v.id
-            SET ej.estado = 'terminado', ej.horas_jugadas = v.duracion_estimada_horas 
+            SET ej.estado = 'terminado', ej.horas_jugadas = v.duracion_estimada_horas, ej.nota = ?, ej.resena = ? 
             WHERE ej.id_usuario = ? AND ej.id_videojuego = ?
         ");
-        $stmt->execute([$id_usuario, $id_videojuego]);
+        $stmt->execute([$nota, $resena, $id_usuario, $id_videojuego]);
 
         // saltamos el disparador de logros para la acción directa del botón check verde
         require_once 'logros_helper.php';
