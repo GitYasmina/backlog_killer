@@ -33,7 +33,7 @@ function actualizarJuego(idVideojuego, accion) {
       }
     });
 }
-
+// MODAL DE HORAS: funciones para abrir, cerrar y enviar los datos del modal de horas al backend
 // abre el modal de horas y pone el id del juego en un input oculto para usarlo luego al enviar el formulario
 function cambiarHoras(idVideojuego) {
   document.getElementById("modal-juego-id").value = idVideojuego;
@@ -90,7 +90,7 @@ function enviarHorasModal() {
     });
 
   //MODAL DE RESEÑA: funciones para abrir, cerrar y enviar los datos del modal de reseña al backend
-  
+
   // abre el modal de la reseña, resetea el formulario y guarda el id del videojuego
   function mostrarModalResena(idVideojuego) {
     document.getElementById("modal-resena-juego-id").value = idVideojuego;
@@ -152,6 +152,106 @@ function enviarHorasModal() {
       .catch((error) => {
         console.error("Error:", error);
         location.reload();
+      });
+  }
+  
+  //MODAL DE CONTRATOS: funciones para abrir, cerrar y enviar los datos del modal de contratos al backend
+  // abre el modal para redactar el contrato semanal
+  function abrirModalContrato() {
+    document.getElementById("contrato-objetivo").value = "";
+    document.getElementById("modal-contrato").classList.add("active");
+  }
+
+  // cierra el modal de contratos
+  function cerrarModalContrato() {
+    document.getElementById("modal-contrato").classList.remove("active");
+  }
+
+  // recoge los datos del formulario y crea el contrato en el servidor
+  function enviarContratoModal() {
+    const idVideojuego = document.getElementById("contrato-juego").value;
+    const objetivo = document.getElementById("contrato-objetivo").value;
+
+    // validacion basica para evitar campos vacios
+    if (idVideojuego === "" || objetivo.trim() === "") {
+      alert("Por favor, selecciona un videojuego activo y describe tu meta.");
+      return;
+    }
+
+    cerrarModalContrato();
+
+    // enviamos los datos al backend con una accion especifica
+    fetch("../app/controlador_contratos.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body:
+        "accion=crear&id_videojuego=" +
+        idVideojuego +
+        "&objetivo=" +
+        encodeURIComponent(objetivo),
+    })
+      .then((res) => res.json())
+      .then((datos) => {
+        if (datos.status === "success") {
+          location.reload();
+        } else {
+          alert(datos.message || "Error al firmar el contrato");
+        }
+      });
+  }
+
+  // se activa al pulsar el check verde: completa la meta y otorga XP
+  function completarContrato(idContrato) {
+    if (
+      !confirm(
+        "¿Has cumplido con éxito tu meta semanal? ¡Se sumará la experiencia!",
+      )
+    )
+      return;
+
+    fetch("../app/controlador_contratos.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "accion=completar&id_contrato=" + idContrato,
+    })
+      .then((res) => res.json())
+      .then((datos) => {
+        if (datos.status === "success") {
+          // si al completar la mision el usuario sube de nivel, el backend nos avisara si hay logro
+          if (datos.logro) {
+            alert(
+              "🏆 ¡LOGRO DESBLOQUEADO! 🏆\n\nHas conseguido: " + datos.logro,
+            );
+          } else {
+            alert("💰 ¡Contrato cumplido! Has recibido +30 XP.");
+          }
+          location.reload();
+        } else {
+          alert(datos.message || "Error al completar el contrato");
+        }
+      });
+  }
+  // se activa al pulsar la papelera: elimina el contrato sin penalizacion
+  function cancelarContrato(idContrato) {
+    if (
+      !confirm(
+        "¿Seguro que quieres romper este contrato? No recibirás penalización, pero perderás tu progreso actual.",
+      )
+    )
+      return;
+
+    fetch("../app/controlador_contratos.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "accion=cancelar&id_contrato=" + idContrato,
+    })
+      .then((res) => res.json())
+      .then((datos) => {
+        if (datos.status === "success") {
+          location.reload();
+        } else {
+          alert(datos.message || "Error al cancelar el contrato");
+        }
       });
   }
 }
