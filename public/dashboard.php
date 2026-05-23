@@ -4,11 +4,17 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-include '../views/header.php';
+require_once '../views/header.php';
 require_once '../app/db.php';
+require_once '../app/checkin_helper.php';
+
 
 // traemos estadísticas básicas para mostrar en el dashboard
 $user_id = $_SESSION['user_id'];
+
+// comprobación diaria
+$datos_checkin = procesarCheckinDiario($conexion, $user_id);
+
 $stmt = $conexion->prepare("
     SELECT 
         COUNT(*) as total,
@@ -44,6 +50,20 @@ $juegos_completados = $stmt_completados->fetchAll();
 ?>
 
 <main class="dashboard-container">
+    <!-- AVISO VISUAL DEL CHECK-IN DIARIO -->
+    <?php if ($datos_checkin['mostrar_aviso']): ?>
+        <div class="notificacion-toast" id="alerta-checkin">
+            <div class="contenido-toast">
+                <span class="icono-toast">🎯</span>
+                <div class="texto-toast">
+                    <h4>¡Foco Diario Activado!</h4>
+                    <p>Has recibido <strong>+<?= $datos_checkin['xp_ganada'] ?> XP</strong> por volver a la carga contra tu backlog.</p>
+                </div>
+                <button class="boton-cerrar-toast" onclick="document.getElementById('alerta-checkin').style.display='none'">✕</button>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <section class="dashboard-header">
         <h1>Mi Biblioteca</h1>
         <div class="stats-grid">
@@ -75,7 +95,7 @@ $juegos_completados = $stmt_completados->fetchAll();
                     <p>No tienes juegos pendientes ni en curso. ¡Buen trabajo!</p>
                     <a href="buscar_juego.php">Añadir más juegos</a>
                 </div>
-            <?php else:
+                <?php else:
                 foreach ($juegos_activos as $juego):
                     $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
                     $porcentaje = round(($juego['horas_jugadas'] / $horas_totales) * 100);
@@ -111,7 +131,7 @@ $juegos_completados = $stmt_completados->fetchAll();
                             </div>
                         </div>
                     </div>
-                <?php endforeach;
+            <?php endforeach;
             endif; ?>
         </div>
     </section>
@@ -125,7 +145,7 @@ $juegos_completados = $stmt_completados->fetchAll();
                 <div class="empty-state">
                     <p>Aún no has completado ningún juego. ¡Toca viciar! 🔥</p>
                 </div>
-            <?php else:
+                <?php else:
                 foreach ($juegos_completados as $juego):
                     $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
                 ?>
@@ -148,7 +168,7 @@ $juegos_completados = $stmt_completados->fetchAll();
                             </div>
                         </div>
                     </div>
-                <?php endforeach;
+            <?php endforeach;
             endif; ?>
         </div>
     </section>
@@ -158,9 +178,9 @@ $juegos_completados = $stmt_completados->fetchAll();
     <div class="modal-content">
         <h3>Registrar Sesión de Juego 🎮</h3>
         <p>¿Cuántas horas has jugado en esta sesión? Se sumarán a tu progreso actual.</p>
-        
+
         <input type="hidden" id="modal-juego-id">
-        
+
         <div class="modal-input-group">
             <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 2" autofocus>
             <span>horas</span>
