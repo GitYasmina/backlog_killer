@@ -9,12 +9,19 @@ include '../views/header.php';
 require_once '../app/db.php';
 
 // Traemos los datos
-$stmt = $conexion->prepare("SELECT username, email, genero_fav, avatar ,fecha_alta FROM usuarios WHERE id = ?");
+$stmt = $conexion->prepare("SELECT username, email, genero_fav, avatar ,fecha_alta, xp, nivel FROM usuarios WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $u = $stmt->fetch();
 
 $datos = $_SESSION['perfil_temp'] ?? $u;
 unset($_SESSION['perfil_temp']);
+
+// calculamos el porcentaje de la barra de experiencia (máximo de 100 XP por nivel)
+$porcentaje_xp = (($u['xp'] ?? 0) / 100) * 100;
+if ($porcentaje_xp > 100) {
+    $porcentaje_xp = 100;
+}
+
 ?>
 
 <main class="dashboard-container">
@@ -30,6 +37,18 @@ unset($_SESSION['perfil_temp']);
             </p>
         </div>
 
+        <!-- rango de experiencia -->
+        <div class="perfil-gamificado-card">
+            <div class="badge-nivel">LVL <?= $u['nivel'] ?? 1 ?></div>
+            <div class="xp-info-container">
+                <h3>Tu Rango Gamer</h3>
+                <div class="barra-xp-bg">
+                    <div class="barra-xp-fill" style="width: <?= $porcentaje_xp ?>%;"></div>
+                </div>
+                <span class="texto-xp"><?= $u['xp'] ?? 0 ?> / 100 XP para el nivel <?= ($u['nivel'] ?? 1) + 1 ?></span>
+            </div>
+        </div>
+
         <?php if (isset($_GET['update']) && $_GET['update'] == 'success'): ?>
             <div class="alert-message success">✅ Cambios guardados correctamente.</div>
         <?php elseif (isset($_GET['error']) && $_GET['error'] == 'exists'): ?>
@@ -37,20 +56,20 @@ unset($_SESSION['perfil_temp']);
         <?php endif; ?>
 
         <form action="../app/update_perfil.php" method="POST">
-            
+
             <div class="form-group">
                 <label>Selecciona tu Avatar</label>
                 <div class="avatar-options">
-                    <?php 
+                    <?php
                     $avatares = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'];
-                    foreach ($avatares as $icon): 
+                    foreach ($avatares as $icon):
                         $es_seleccionado = ($datos['avatar'] == $icon);
                     ?>
                         <label class="avatar-item">
                             <input type="radio" name="avatar" value="<?= $icon ?>" <?= $es_seleccionado ? 'checked' : '' ?>>
-                            <img src="../assets/img/avatars/<?= $icon ?>" 
-                                 class="<?= $es_seleccionado ? 'selected' : '' ?>"
-                                 alt="Icono <?= htmlspecialchars($icon) ?>">
+                            <img src="../assets/img/avatars/<?= $icon ?>"
+                                class="<?= $es_seleccionado ? 'selected' : '' ?>"
+                                alt="Icono <?= htmlspecialchars($icon) ?>">
                         </label>
                     <?php endforeach; ?>
                 </div>
