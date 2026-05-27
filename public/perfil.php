@@ -24,70 +24,76 @@ if ($porcentaje_xp > 100) {
 
 ?>
 
-<main class="dashboard-container">
-    <div class="login-card perfil-card">
-
-        <div class="perfil-header">
-            <div class="avatar-preview">
-                <img src="../assets/img/avatars/<?= htmlspecialchars($u['avatar']) ?>" alt="Avatar Actual">
-            </div>
-            <h2>¡Hola, <?= htmlspecialchars($u['username']) ?>!</h2>
-            <p class="membership-date">
-                Miembro desde: <?= isset($u['fecha_alta']) ? date('d/m/Y', strtotime($u['fecha_alta'])) : 'Reciente' ?>
-            </p>
+<main class="dashboard-container perfil-layout-moderno">
+    
+    <div class="perfil-banner-top">
+        <div class="perfil-avatar-preview">
+            <img src="../assets/img/avatars/<?= htmlspecialchars($u['avatar']) ?>" alt="Avatar Actual">
         </div>
-
-        <!-- rango de experiencia -->
-        <div class="perfil-gamificado-card">
-            <div class="badge-nivel">LVL <?= $u['nivel'] ?? 1 ?></div>
-            <div class="xp-info-container">
-                <h3>Tu Rango Gamer</h3>
-                <div class="barra-xp-bg">
-                    <div class="barra-xp-fill" style="width: <?= $porcentaje_xp ?>%;"></div>
-                </div>
-                <span class="texto-xp"><?= $u['xp'] ?? 0 ?> / 100 XP para el nivel <?= ($u['nivel'] ?? 1) + 1 ?></span>
-            </div>
-        </div>
-
-        <?php if (isset($_GET['update']) && $_GET['update'] == 'success'): ?>
-            <div class="alert-message success">✅ Cambios guardados correctamente.</div>
-        <?php elseif (isset($_GET['error']) && $_GET['error'] == 'exists'): ?>
-            <div class="alert-message error">❌ El username o email ya están en uso.</div>
-        <?php endif; ?>
-
-        <form action="../app/update_perfil.php" method="POST">
-
-            <div class="form-group">
-                <label>Selecciona tu Avatar</label>
-                <div class="avatar-options">
-                    <?php
-                    $avatares = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'];
-                    foreach ($avatares as $icon):
-                        $es_seleccionado = ($datos['avatar'] == $icon);
-                    ?>
-                        <label class="avatar-item">
-                            <input type="radio" name="avatar" value="<?= $icon ?>" <?= $es_seleccionado ? 'checked' : '' ?>>
-                            <img src="../assets/img/avatars/<?= $icon ?>"
-                                class="<?= $es_seleccionado ? 'selected' : '' ?>"
-                                alt="Icono <?= htmlspecialchars($icon) ?>">
-                        </label>
-                    <?php endforeach; ?>
+        <div class="perfil-user-info-top">
+            <h2 class="perfil-titulo-username">¡Hola, <?= htmlspecialchars($u['username']) ?>!</h2>
+            <p class="perfil-fecha-alta">Miembro desde: <?= isset($u['fecha_alta']) ? date('d/m/Y', strtotime($u['fecha_alta'])) : 'Reciente' ?></p>
+            
+            <div class="perfil-gamificado-horizontal">
+                <div class="badge-nivel">LVL <?= $u['nivel'] ?? 1 ?></div>
+                <div class="xp-progress-wrapper">
+                    <div class="barra-xp-bg">
+                        <div class="barra-xp-fill" style="width: <?= $porcentaje_xp ?>%;"></div>
+                    </div>
+                    <span class="texto-xp"><?= $u['xp'] ?? 0 ?> / 100 XP para el siguiente nivel</span>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label>Gamer Tag</label>
-                <input type="text" name="username" value="<?= htmlspecialchars($datos['username']) ?>" required>
+    <?php if (isset($_GET['update']) && $_GET['update'] == 'success'): ?>
+        <div class="alert-message success">✅ Cambios guardados correctamente.</div>
+    <?php elseif (isset($_GET['error']) && $_GET['error'] == 'exists'): ?>
+        <div class="alert-message error">❌ El username o email ya están en uso.</div>
+    <?php endif; ?>
+
+   <form action="../app/update_perfil.php" method="POST" class="perfil-form-grid">
+        
+        <div class="perfil-bloque-avatar">
+            <label class="label-section-title">Cambiar Imagen de Perfil</label>
+            <div class="avatar-selector-grid">
+                
+                <?php
+                $avatares = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'];
+                foreach ($avatares as $icon):
+                    $es_seleccionado = ($datos['avatar'] == $icon);
+                ?>
+                    <label class="avatar-option-item">
+                        <input type="radio" name="avatar" value="<?= $icon ?>" <?= $es_seleccionado ? 'checked' : '' ?>>
+                        <img src="../assets/img/avatars/<?= htmlspecialchars($icon) ?>" alt="Icono <?= htmlspecialchars($icon) ?>">
+                    </label>
+                <?php endforeach; ?>
+                
+            </div>
+            <div class="perfil-wrapper-botones-horizontal">
+                <button type="submit" class="btn-cta-perfil">GUARDAR CAMBIOS</button>
+                <a href="../app/logout.php" class="logout-link-action">CERRAR SESIÓN</a>
+            </div>
+        </div>
+        
+       <div class="perfil-bloque-datos">
+            <label class="label-section-title">Ajustes de la Cuenta</label>
+            
+            <div class="campos-datos-row">
+                <div class="form-group-perfil">
+                    <label>Gamer Tag</label>
+                    <input type="text" name="username" class="input-perfil-dark" value="<?= htmlspecialchars($datos['username']) ?>" required>
+                </div>
+
+                <div class="form-group-perfil">
+                    <label>Email de contacto</label>
+                    <input type="email" name="email" class="input-perfil-dark" value="<?= htmlspecialchars($datos['email']) ?>" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Email de contacto</label>
-                <input type="email" name="email" value="<?= htmlspecialchars($datos['email']) ?>" required>
-            </div>
-
-            <div class="form-group">
+            <div class="form-group-perfil">
                 <label>Género Favorito</label>
-                <select name="genero_fav" class="select-ruleta-perfil">
+                <select name="genero_fav" class="select-perfil-dark">
                     <?php
                     $generos = ['Acción', 'RPG', 'Aventura', 'Shooter / Tiros', 'Estrategia', 'Terror', 'Indie', 'Plataformas'];
                     foreach ($generos as $g): ?>
@@ -96,13 +102,10 @@ if ($porcentaje_xp > 100) {
                 </select>
             </div>
 
-            <button type="submit" class="btn-cta">ACTUALIZAR PERFIL</button>
-        </form>
+            
+        </div>
 
-        <p class="auth-footer">
-            <a href="../app/logout.php" class="btn-logout">Cerrar Sesión</a>
-        </p>
-    </div>
+    </form>
 </main>
 
 <?php include '../views/footer.php'; ?>
