@@ -33,17 +33,19 @@ $generos_existentes = array_unique(array_column($pendientes, 'genero'));
 sort($generos_existentes);
 ?>
 
-<main class="dashboard-container">
-    <div class="login-card ruleta-card">
-        <h2>🎲 Backlog Killer</h2>
-        <p>¿No sabes a qué jugar? Deja que el destino elija por ti.</p>
+<main class="dashboard-container ruleta-page-layout">
+    
+    <div class="ruleta-panel-control">
+        <div class="ruleta-txt-header">
+            <h2>🎲 Backlog Killer</h2>
+            <p>¿No sabes a qué jugar hoy? Filtra tu biblioteca pendiente y deja que el azar elija tu próxima víctima.</p>
+        </div>
 
         <?php if (!empty($pendientes)): ?>
-            <div class="filtro-ruleta-container">
-                
-                <div class="filtro-group">
+            <div class="filtro-ruleta-bloque">
+                <div class="form-group">
                     <label for="genero-ruleta">¿Qué te apetece jugar hoy?</label>
-                    <select id="genero-ruleta" class="select-ruleta">
+                    <select id="genero-ruleta" class="select-ruleta-nueva">
                         <option value="todos" <?= ($genero_fav == '') ? 'selected' : '' ?>>Cualquier género (Todos)</option>
                         <?php foreach ($generos_existentes as $gen): 
                             $es_favorito = (strtolower($gen) === strtolower($genero_fav));
@@ -55,34 +57,40 @@ sort($generos_existentes);
                     </select>
                 </div>
 
-                <div class="filtro-group">
+                <div class="form-group">
                     <label for="tiempo-ruleta">¿De cuánto tiempo dispones?</label>
-                    <select id="tiempo-ruleta" class="select-ruleta">
+                    <select id="tiempo-ruleta" class="select-ruleta-nueva">
                         <option value="cualquiera" selected>Tengo tiempo indefinido ☕</option>
-                        <option value="corto">Sesión rápida (Menos de 1 hora) ⚡</option>
-                        <option value="medio">Sesión normal (1 a 2 horas) 🎮</option>
-                        <option value="largo">Sesión intensa (Más de 2 horas) 🔥</option>
+                        <option value="corto">Campañas cortas (Menos de 15h) ⚡</option>
+                        <option value="medio">Campañas normales (15h a 40h) 🎮</option>
+                        <option value="largo">Campañas masivas / RPGs (Más de 40h) 🔥</option>
                     </select>
                 </div>
-
             </div>
         <?php endif; ?>
 
-        <div class="ruleta-pantalla" id="pantalla-ruleta">
-            <div class="ruleta-placeholder">
-                <span>?</span>
-            </div>
+        <div class="ruleta-btn-contenedor">
+            <?php if (empty($pendientes)): ?>
+                <div class="empty-state">
+                    <p>No tienes juegos pendientes o en progreso en tu lista.</p>
+                    <a href="buscar_juego.php" class="btn-cta">Añadir juegos primero</a>
+                </div>
+            <?php else: ?>
+                <button id="btn-generar" class="btn-cta-ruleta" onclick="girarRuleta()">¡MATAR BACKLOG!</button>
+            <?php endif; ?>
         </div>
+    </div>
 
-        <?php if (empty($pendientes)): ?>
-            <div class="empty-state">
-                <p>No tienes juegos pendientes o en progreso en tu lista.</p>
-                <a href="buscar_juego.php" class="btn-primary">Añadir juegos primero</a>
+    <div class="ruleta-panel-visual">
+        <?php if (!empty($pendientes)): ?>
+            <div class="ruleta-wrapper">
+                <div class="ruleta-puntero"></div>
+                <div id="disco-ruleta" class="ruleta-disco"></div>
+                <div class="ruleta-centro"></div>
             </div>
-        <?php else: ?>
-            <button id="btn-girar" class="btn-cta" onclick="girarRuleta()">¡MATAR BACKLOG!</button>
         <?php endif; ?>
     </div>
+
 </main>
 
 <script>
