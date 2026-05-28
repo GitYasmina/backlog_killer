@@ -82,7 +82,7 @@ function actualizarPorcionesYFiltros() {
 
   if (boton) boton.disabled = false;
 
-  // --- ACTUALIZACIÓN DE PORCIONES ---
+
   disco.style.transition = "none"; // quitamos la transición para reposicionar los sectores sin animación
   disco.style.transform = "rotate(0deg)"; // reseteamos la posición del disco a 0 grados para evitar acumulaciones extrañas de rotación
   gradosActuales = 0;
@@ -152,8 +152,57 @@ function girarRuleta() {
       Math.floor(anguloNormalizado / gradosPorSector) % totalSectores;
     const juegoElegido = juegosFiltrados[indiceGanador];
 
-    alert(
-      `🔥 ¡Tu backlog tiembla! El destino te reta a jugar a: ${juegoElegido.titulo}`,
-    );
+    mostrarPopUpGanador(juegoElegido);
   }, 4500);
+}
+// ==========================================================================
+// LÓGICA DEL POPUP INTERACTIVO DE ACEPTACIÓN DE RETO DESTINO
+// ==========================================================================
+
+function mostrarPopUpGanador(juegoElegido) {
+    // Vinculamos la ID que tu backend lee (id_videojuego)
+    document.getElementById("reto-juego-id").value = juegoElegido.id_videojuego;
+    document.getElementById("reto-juego-titulo").textContent = juegoElegido.titulo;
+    
+    // Mapeamos la URL de la carátula o dejamos la por defecto si viene vacía
+    const imagenUrl = juegoElegido.imagen_url ? juegoElegido.imagen_url : '../assets/img/no-image.png';
+    document.getElementById("reto-juego-imagen").src = imagenUrl;
+
+    // Encendemos el modal premium con la clase active
+    document.getElementById("modal-reto-destino").classList.add("active");
+}
+
+// Se ejecuta si el jugador le da a "¡Aceptar Reto y Jugar!"
+function aceptarRetoDestino() {
+    const idVideojuego = document.getElementById("reto-juego-id").value;
+    
+    // Cerramos el modal de golpe
+    document.getElementById("modal-reto-destino").classList.remove("active");
+
+    // Conectamos de forma asíncrona con tu update_game.php
+    fetch("../app/update_game.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "id_videojuego=" + idVideojuego + "&accion=progreso",
+    })
+    .then((res) => res.json())
+    .then((datos) => {
+        if (datos.status === "success") {
+            // Usamos la alerta premium global unificada de utils.js
+            lanzarNotificacionGamer("exito", "RETO ACEPTADO ⚔", "El juego se ha movido a tu Backlog Activo. ¡Redireccionando!");
+            
+            // Redirección suave al dashboard para ver el progreso colocado
+            setTimeout(() => {
+                window.location.href = "dashboard.php";
+            }, 1500);
+        } else {
+            lanzarNotificacionGamer("error", "Error", datos.message || "No se pudo actualizar el estado.");
+        }
+    });
+}
+
+// Se ejecuta si el usuario rechaza la propuesta del destino para volver a probar
+function rechazarRetoDestino() {
+    document.getElementById("modal-reto-destino").classList.remove("active");
+    lanzarNotificacionGamer("exito", "DESTINO RECHAZADO 🎲", "Puedes volver a girar la ruleta cuando quieras.");
 }
