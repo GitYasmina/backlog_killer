@@ -144,13 +144,29 @@ $contrato_activo = $stmt_contrato->fetch();
                     <p>No tienes juegos pendientes ni en curso. ¡Buen trabajo! 🔥</p>
                     <a href="buscar_juego.php">Añadir más juegos</a>
                 </div>
-                <?php else:
+            <?php else:
                 foreach ($juegos_activos as $juego):
-                    $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
-                    $porcentaje = round(($juego['horas_jugadas'] / $horas_totales) * 100);
+                    // Minutos guardados -> Horas estimadas
+                    $minutos_jugados = $juego['horas_jugadas']; 
+                    $horas_estimadas = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
+
+                    $horas_jugadas_decimal = $minutos_jugados / 60;
+                    $porcentaje = round(($horas_jugadas_decimal / $horas_estimadas) * 100);
 
                     $es_completacionista = ($porcentaje > 100);
                     if ($porcentaje > 100) $porcentaje = 100;
+
+                    // Desglose limpio para el string visual
+                    $solo_horas = floor($minutos_jugados / 60);
+                    $solo_minutos = $minutos_jugados % 60;
+                    
+                    $texto_tiempo_jugado = "";
+                    if ($solo_horas > 0) {
+                        $texto_tiempo_jugado .= $solo_horas . "h ";
+                    }
+                    if ($solo_minutos > 0 || $solo_horas == 0) {
+                        $texto_tiempo_jugado .= $solo_minutos . "min";
+                    }
                 ?>
                     <div class="game-card-premium" data-estado="<?= htmlspecialchars($juego['estado']) ?>">
                         <div class="game-poster-wrapper">
@@ -169,9 +185,9 @@ $contrato_activo = $stmt_contrato->fetch();
 
                                     <span class="progress-text-dash">
                                         <?php if ($es_completacionista): ?>
-                                            <span class="txt-modo-completacionista">🌟 ¡Superado! Modo completacionista (<?= $juego['horas_jugadas'] ?>h / <?= $horas_totales ?>h)</span>
+                                            <span class="txt-modo-completacionista">🌟 ¡Superado! Modo completacionista (<?= $texto_tiempo_jugado ?> / <?= $horas_estimadas ?>h)</span>
                                         <?php else: ?>
-                                            <?= $juego['horas_jugadas'] ?>h / <?= $horas_totales ?>h (<?= $porcentaje ?>%)
+                                            <?= $texto_tiempo_jugado ?> / <?= $horas_estimadas ?>h (<?= $porcentaje ?>%)
                                         <?php endif; ?>
                                     </span>
                                 </div>
@@ -203,9 +219,23 @@ $contrato_activo = $stmt_contrato->fetch();
                 <div class="empty-state-dash">
                     <p>Aún no has completado ningún juego. ¡Toca viciar! 🕹</p>
                 </div>
-                <?php else:
+            <?php else:
                 foreach ($juegos_completados as $juego):
-                    $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
+                    // 🚀 CORRECCIÓN SÓLIDA DE VARIABLES PARA JUEGOS COMPLETADOS
+                    $minutos_totales_acumulados = intval($juego['horas_jugadas']);
+                    $horas_estimadas_api = ($juego['duracion_estimada_horas'] > 0) ? intval($juego['duracion_estimada_horas']) : 30;
+                    
+                    // Desglosamos de forma humana los minutos que el usuario invirtió de verdad
+                    $final_horas = floor($minutos_totales_acumulados / 60);
+                    $final_minutos = $minutos_totales_acumulados % 60;
+                    
+                    $texto_tiempo_final = "";
+                    if ($final_horas > 0) {
+                        $texto_tiempo_final .= $final_horas . "h ";
+                    }
+                    if ($final_minutos > 0 || $final_horas == 0) {
+                        $texto_tiempo_final .= $final_minutos . "min";
+                    }
                 ?>
                     <div class="game-card-premium game-card-completed-premium">
                         <div class="game-poster-wrapper">
@@ -220,7 +250,7 @@ $contrato_activo = $stmt_contrato->fetch();
                                 <div class="progress-bar-bg-dash">
                                     <div class="progress-bar-fill-dash completed-bar" style="width: 100%;"></div>
                                 </div>
-                                <span class="progress-text-dash success-txt">¡Completado en <?= $horas_totales ?>h! 🌟</span>
+                                <span class="progress-text-dash success-txt">¡Completado en <?= $texto_tiempo_final ?>! 🌟</span>
                             </div>
 
                             <div class="card-actions-premium">
@@ -234,19 +264,14 @@ $contrato_activo = $stmt_contrato->fetch();
     </section>
 </main>
 
-<!-- ==========================================================================
-   MODALES DEL SISTEMA (Horas, Reseñas, Contrato Semanal, Confirmación de Eliminación)
-   ========================================================================== -->
-
-<!-- 1. Modal para registrar horas de juego -->
 <div id="modal-horas" class="modal-overlay">
     <div class="modal-content">
         <h3>Registrar Sesión de Juego 🎮</h3>
-        <p>¿Cuántas horas has jugado en esta sesión? Se sumarán a tu progreso actual.</p>
+        <p>¿Cuántos minutos has estado jugando en esta sesión? Se sumarán a tu progreso actual.</p>
         <input type="hidden" id="modal-juego-id">
         <div class="modal-input-group">
-            <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 2" autofocus>
-            <span>horas</span>
+            <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 10, 30, 60" autofocus>
+            <span>minutos</span>
         </div>
         <div class="modal-actions">
             <button onclick="cerrarModal()" class="btn-modal-cancel">Cancelar</button>
@@ -255,7 +280,6 @@ $contrato_activo = $stmt_contrato->fetch();
     </div>
 </div>
 
-<!-- 2. Modal valoración y reseña -->
 <div id="modal-resena" class="modal-overlay">
     <div class="modal-content">
         <h3>¡Juego Completado! 🏆</h3>
@@ -284,7 +308,6 @@ $contrato_activo = $stmt_contrato->fetch();
     </div>
 </div>
 
-<!-- 3. Modal para redactar el contrato semanal -->
 <div id="modal-contrato" class="modal-overlay">
     <div class="modal-content">
         <h3>Redactar Contrato Semanal ✍️</h3>
@@ -294,10 +317,10 @@ $contrato_activo = $stmt_contrato->fetch();
             <select id="contrato-juego" class="select-ruleta-perfil">
                 <?php if (empty($juegos_activos)): ?>
                     <option value="">-- No tienes juegos activos --</option>
-                    <?php else:
+                <?php else:
                     foreach ($juegos_activos as $ja): ?>
                         <option value="<?= $ja['id_videojuego'] ?>"><?= htmlspecialchars($ja['titulo']) ?> (<?= ucfirst($ja['estado']) ?>)</option>
-                <?php endforeach;
+                    <?php endforeach;
                 endif; ?>
             </select>
         </div>
@@ -310,9 +333,8 @@ $contrato_activo = $stmt_contrato->fetch();
             <button onclick="enviarContratoModal()" class="btn-modal-save">Firmar Trato</button>
         </div>
     </div>
-
-    <!-- 4. Modal de Confirmación para Eliminar Juegos -->
 </div>
+
 <div id="modal-confirmar-eliminar" class="modal-overlay">
     <div class="modal-content modal-danger-premium">
         <div class="modal-danger-icon">⚠</div>
@@ -328,7 +350,6 @@ $contrato_activo = $stmt_contrato->fetch();
     </div>
 </div>
 
-
-<script src="../assets/js/dashboard.js"></script>
 <script src="../assets/js/utils.js"></script>
+<script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>

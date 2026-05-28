@@ -33,12 +33,11 @@ try {
         $stmt->execute([$id_usuario, $id_videojuego]);
         echo json_encode(['status' => 'success', 'message' => '¡A jugar!']);
     } else if ($accion === 'actualizar_horas') {
-        // guardamos las horas reales que el usuario escribe en el prompt
-        $horas_nuevas = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
-
-        // sumamos las horas en la tabla intermedia
+        // guardamos los minutos reales que el usuario escribe en el prompt
+        $minutos_nuevos = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
+        // sumamos los minutos en la tabla intermedia
         $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = horas_jugadas + ? WHERE id_usuario = ? AND id_videojuego = ?");
-        $stmt->execute([$horas_nuevas, $id_usuario, $id_videojuego]);
+        $stmt->execute([$minutos_nuevos, $id_usuario, $id_videojuego]);
 
         // comprobamos si con esta suma se ha alcanzado o superado la duración estimada
         $check = $conexion->prepare("
@@ -50,21 +49,26 @@ try {
         $check->execute([$id_usuario, $id_videojuego]);
         $progreso = $check->fetch();
 
-        if ($progreso && $progreso['horas_jugadas'] >= $progreso['duracion_estimada_horas']) {
-            // el usuario ha alcanzado las horas estimadas, lo marcamos como terminado automáticamente
-            $up = $conexion->prepare("UPDATE estados_juego SET estado = 'terminado' WHERE id_usuario = ? AND id_videojuego = ?");
-            $up->execute([$id_usuario, $id_videojuego]);
+       if ($progreso) {
+            $minutos_acumulados = (int)$progreso['horas_jugadas'];
+            $minutos_estimados_totales = (int)$progreso['duracion_estimada_horas'] * 60; // Ej: 6h * 60 = 360min
 
-            // saltamos el disparador de logros por si es su primer juego completado
-            require_once 'logros_helper.php';
-            $nuevos_logros = comprobarLogros($conexion, $id_usuario, 'primer_terminado');
+            if ($minutos_acumulados >= $minutos_estimados_totales) {
+                // el usuario ha alcanzado o superado los minutos estimados, se auto-completa
+                $up = $conexion->prepare("UPDATE estados_juego SET estado = 'terminado' WHERE id_usuario = ? AND id_videojuego = ?");
+                $up->execute([$id_usuario, $id_videojuego]);
 
-            echo json_encode([
-                'status' => 'success',
-                'message' => '¡Has alcanzado la duración estimada! Juego completado automáticamente.',
-                'logro' => !empty($nuevos_logros) ? $nuevos_logros[0] : null
-            ]);
-            exit();
+                // disparador de logros
+                require_once 'logros_helper.php';
+                $nuevos_logros = comprobarLogros($conexion, $id_usuario, 'primer_terminado');
+
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => '¡Has alcanzado la duración estimada! Juego completado automáticamente.',
+                    'logro' => !empty($nuevos_logros) ? $nuevos_logros[0] : null
+                ]);
+                exit();
+            }
         }
 
         echo json_encode(['status' => 'success']);
