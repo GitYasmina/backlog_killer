@@ -23,6 +23,24 @@ try {
             exit();
         }
 
+        // contamos cuántas misiones activas tiene ya firmadas el usuario
+        $stmt_check = $conexion->prepare("
+            SELECT COUNT(*) 
+            FROM contratos_semanales 
+            WHERE id_usuario = ? AND completado = 0 AND fecha_limite >= CURDATE()
+        ");
+        $stmt_check->execute([$id_usuario]);
+        $contratos_activos = (int)$stmt_check->fetchColumn();
+
+        // Si ya ha alcanzado el límite de 3, rechazamos la creación inmediatamente
+        if ($contratos_activos >= 3) {
+            echo json_encode([
+                'status' => 'error', 
+                'message' => 'Límite alcanzado. No puedes tener más de 3 contratos semanales activos en paralelo.'
+            ]);
+            exit();
+        }
+
         // calculamos la fecha límite sumando exactamente 7 días a la fecha actual
         $fecha_limite = date('Y-m-d', strtotime('+7 days'));
 

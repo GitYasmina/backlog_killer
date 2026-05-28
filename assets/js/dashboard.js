@@ -5,24 +5,44 @@ function actualizarJuego(idVideojuego, accion) {
         return;
     }
 
+    const botonPulsado = event.currentTarget;
+    const tarjetaJuego = botonPulsado.closest(".game-card-premium");
+
     fetch("../app/update_game.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "id_videojuego=" + idVideojuego + "&accion=" + accion,
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
-            if (datos.logro) {
-                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
-                setTimeout(() => { location.reload(); }, 2000);
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                if (tarjetaJuego) tarjetaJuego.classList.add("removiendo-contrato");
+                if (tarjetaJuego) {
+                    tarjetaJuego.classList.add("removiendo-contrato");
+
+                    // cuando acabe la animación (400ms), borramos la tarjeta del HTML
+                    setTimeout(() => {
+                        tarjetaJuego.remove();
+                        // si no quedan más juegos en la lista, podrías mostrar un texto de "Lista vacía"
+                        comprobarListaVaciaContratos();
+                    }, 400);
+                }
+                if (datos.logro) {
+                    lanzarNotificacionGamer(
+                        "logro",
+                        "¡LOGRO DESBLOQUEADO!",
+                        `Has conseguido: ${datos.logro}`,
+                    );
+
+                }
             } else {
-                location.reload();
+                lanzarNotificacionGamer(
+                    "error",
+                    "Error",
+                    datos.message || "No se pudo actualizar el juego.",
+                );
             }
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "No se pudo actualizar el juego.");
-        }
-    });
+        });
 }
 
 // 2. CONTROL DEL MODAL DE REGISTRO DE HORAS
@@ -44,7 +64,11 @@ function enviarHorasModal() {
     nuevasHoras = parseInt(nuevasHoras);
 
     if (isNaN(nuevasHoras) || nuevasHoras <= 0) {
-        lanzarNotificacionGamer("error", "Valor Incorrecto", "Introduce un número de horas mayor que cero.");
+        lanzarNotificacionGamer(
+            "error",
+            "Valor Incorrecto",
+            "Introduce un número de horas mayor que cero.",
+        );
         return;
     }
 
@@ -53,26 +77,48 @@ function enviarHorasModal() {
     fetch("../app/update_game.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "id_videojuego=" + idVideojuego + "&accion=actualizar_horas&horas=" + nuevasHoras,
+        body:
+            "id_videojuego=" +
+            idVideojuego +
+            "&accion=actualizar_horas&horas=" +
+            nuevasHoras,
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
-            if (datos.logro) {
-                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
-                setTimeout(() => { location.reload(); }, 2000);
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                if (datos.logro) {
+                    lanzarNotificacionGamer(
+                        "logro",
+                        "¡LOGRO DESBLOQUEADO!",
+                        `Has conseguido: ${datos.logro}`,
+                    );
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    lanzarNotificacionGamer(
+                        "exito",
+                        "Progreso Guardado",
+                        datos.message || "Horas actualizadas correctamente.",
+                    );
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1200);
+                }
             } else {
-                lanzarNotificacionGamer("exito", "Progreso Guardado", datos.message || "Horas actualizadas correctamente.");
-                setTimeout(() => { location.reload(); }, 1200);
+                lanzarNotificacionGamer("error", "Error", datos.message);
             }
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message);
-        }
-    });
+        });
 }
+
+// Variable global para recordar qué tarjeta estamos completando
+let tarjetaJuegoACompletar = null;
 
 // 3. CONTROL DEL MODAL DE VALORACIÓN Y RESEÑAS
 function mostrarModalResena(idVideojuego) {
+    if (event && event.currentTarget) {
+        tarjetaJuegoACompletar = event.currentTarget.closest(".game-card-premium");
+    }
     document.getElementById("modal-resena-juego-id").value = idVideojuego;
     document.getElementById("modal-comentario-input").value = "";
 
@@ -90,7 +136,9 @@ function cerrarModalResena() {
 function enviarResenaModal() {
     const idVideojuego = document.getElementById("modal-resena-juego-id").value;
     const comentario = document.getElementById("modal-comentario-input").value;
-    const estrellaSeleccionada = document.querySelector('input[name="puntuacion"]:checked');
+    const estrellaSeleccionada = document.querySelector(
+        'input[name="puntuacion"]:checked',
+    );
     const nota = estrellaSeleccionada ? estrellaSeleccionada.value : "";
 
     document.getElementById("modal-resena").classList.remove("active");
@@ -98,26 +146,45 @@ function enviarResenaModal() {
     fetch("../app/update_game.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "id_videojuego=" + idVideojuego + "&accion=terminado&nota=" + nota + "&resena=" + encodeURIComponent(comentario),
+        body:
+            "id_videojuego=" +
+            idVideojuego +
+            "&accion=terminado&nota=" +
+            nota +
+            "&resena=" +
+            encodeURIComponent(comentario),
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
-            if (datos.logro) {
-                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
-                setTimeout(() => { location.reload(); }, 2000);
-            } else {
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                if (tarjetaJuegoACompletar) {
+                    tarjetaJuegoACompletar.classList.add("removiendo-contrato");
+                    setTimeout(() => {
+                        tarjetaJuegoACompletar.remove();
+                        comprobarListaVaciaContratos();
+                    }, 400);
+                }
                 lanzarNotificacionGamer("exito", "¡Juego Completado!", "La reseña se ha guardado con éxito.");
-                setTimeout(() => { location.reload(); }, 1200);
+                if (datos.logro) {
+                    lanzarNotificacionGamer(
+                        "logro",
+                        "¡LOGRO DESBLOQUEADO!",
+                        `Has conseguido: ${datos.logro}`,
+                    );
+                }
+            } else {
+                lanzarNotificacionGamer(
+                    "error",
+                    "Error",
+                    datos.message || "Hubo un error al guardar la reseña",
+                );
+                setTimeout(() => { location.reload(); }, 550);
             }
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "Hubo un error al guardar la reseña");
-        }
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        location.reload();
-    });
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            location.reload();
+        });
 }
 
 // 4. CONTROL DEL MODAL DE CONTRATOS SEMANALES
@@ -135,7 +202,11 @@ function enviarContratoModal() {
     const objetivo = document.getElementById("contrato-objetivo").value;
 
     if (idVideojuego === "" || objetivo.trim() === "") {
-        lanzarNotificacionGamer("error", "Campos Incompletos", "Selecciona un videojuego activo y describe tu meta.");
+        lanzarNotificacionGamer(
+            "error",
+            "Campos Incompletos",
+            "Selecciona un videojuego activo y describe tu meta.",
+        );
         return;
     }
 
@@ -144,19 +215,39 @@ function enviarContratoModal() {
     fetch("../app/controlador_contratos.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "accion=crear&id_videojuego=" + idVideojuego + "&objetivo=" + encodeURIComponent(objetivo),
+        body:
+            "accion=crear&id_videojuego=" +
+            idVideojuego +
+            "&objetivo=" +
+            encodeURIComponent(objetivo),
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
-            location.reload();
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "Error al firmar el contrato");
-        }
-    });
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                // avisamos visualmente de que se ha firmado el trato con éxito
+                lanzarNotificacionGamer(
+                    "exito",
+                    "CONTRATO FIRMADO 📜",
+                    "Tu micro-objetivo se ha añadido al tablero.",
+                );
+                setTimeout(() => {
+                    location.reload();
+                }, 1200);
+            } else {
+                lanzarNotificacionGamer(
+                    "error",
+                    "Error",
+                    datos.message || "Error al firmar el contrato",
+                );
+            }
+        });
 }
 
 function completarContrato(idContrato) {
+    // Obtenemos el botón pulsado para luego eliminar la tarjeta de contrato visualmente
+    const botonPulsado = event.currentTarget;
+    const tarjetaContrato = botonPulsado.closest(".tarjeta-contrato-gamer-premium");
+
     fetch("../app/controlador_contratos.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -165,45 +256,95 @@ function completarContrato(idContrato) {
     .then((res) => res.json())
     .then((datos) => {
         if (datos.status === "success") {
+            // activamos la animación de deslizamiento y fade-out en la tarjeta
+            if (tarjetaContrato) {
+                tarjetaContrato.classList.add("removiendo-contrato");
+                
+                // eperamos los 400ms de la transición CSS y fulminamos la tarjeta del HTML sin recargar
+                setTimeout(() => {
+                    tarjetaContrato.remove();
+                    
+                    // comprobamos si quedan más contratos activos para pintar o no el cartel de "No tienes contratos firmados"
+                    // para pintar el cartel de "No tienes contratos firmados"
+                    if (typeof comprobarListaVaciaContratos === "function") {
+                        comprobarListaVaciaContratos();
+                    }
+                }, 400);
+            }
+
+            // lanzamos las alertas correspondientes (ahora flotan de forma independiente)
             if (datos.logro) {
-                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
-                setTimeout(() => { location.reload(); }, 2000);
+                lanzarNotificacionGamer(
+                    "logro",
+                    "¡LOGRO DESBLOQUEADO!",
+                    `Has conseguido: ${datos.logro}`
+                );
             } else {
-                lanzarNotificacionGamer("exito", "Misión Cumplida", "¡Contrato cumplido! Has recibido +30 XP.");
-                setTimeout(() => { location.reload(); }, 1500);
+                lanzarNotificacionGamer(
+                    "exito",
+                    "Misión Cumplida",
+                    "¡Contrato cumplido! Has recibido +30 XP."
+                );
             }
         } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "Error al completar el contrato");
+            lanzarNotificacionGamer(
+                "error",
+                "Error",
+                datos.message || "Error al completar el contrato"
+            );
         }
     });
 }
 
 function cancelarContrato(idContrato) {
+    // obtenemos el botón pulsado para luego eliminar la tarjeta de contrato visualmente
+    const botonPulsado = event.currentTarget;
+    const tarjetaContrato = botonPulsado.closest(
+        ".tarjeta-contrato-gamer-premium",
+    );
     fetch("../app/controlador_contratos.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "accion=cancelar&id_contrato=" + idContrato,
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
-            lanzarNotificacionGamer("exito", "Contrato Cancelado", "El contrato ha sido cancelado exitosamente.");
-            setTimeout(() => { location.reload(); }, 1000);
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "Error al cancelar el contrato");
-        }
-    });
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                if (tarjetaContrato)
+                    tarjetaContrato.classList.add("removiendo-contrato");
+                lanzarNotificacionGamer(
+                    "exito",
+                    "Contrato Cancelado",
+                    "El contrato ha sido cancelado exitosamente.",
+                );
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                lanzarNotificacionGamer(
+                    "error",
+                    "Error",
+                    datos.message || "Error al cancelar el contrato",
+                );
+            }
+        });
 }
 
 // 5. CONTROL DE ELIMINACIÓN PREMIUM INTERACTIVO
 function confirmarEliminarJuego(idJuego, tituloJuego) {
+    if (event && event.currentTarget) {
+        tarjetaJuegoAEliminar = event.currentTarget.closest(".game-card-premium");
+    }
     document.getElementById("eliminar-juego-id").value = idJuego;
-    document.getElementById("eliminar-juego-titulo").textContent = `"${tituloJuego}"`;
+    document.getElementById("eliminar-juego-titulo").textContent =
+        `"${tituloJuego}"`;
     document.getElementById("modal-confirmar-eliminar").classList.add("active");
 }
 
 function cerrarModalEliminar() {
-    document.getElementById("modal-confirmar-eliminar").classList.remove("active");
+    document
+        .getElementById("modal-confirmar-eliminar")
+        .classList.remove("active");
 }
 
 function ejecutarEliminarJuego() {
@@ -215,15 +356,26 @@ function ejecutarEliminarJuego() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "id_videojuego=" + idJuego + "&accion=eliminar",
     })
-    .then((res) => res.json())
-    .then((datos) => {
-        if (datos.status === "success") {
+        .then((res) => res.json())
+        .then((datos) => {
+            if (datos.status === "success") {
+                if (tarjetaJuegoAEliminar) {
+                tarjetaJuegoAEliminar.classList.add("removiendo-contrato");
+                setTimeout(() => {
+                    tarjetaJuegoAEliminar.remove();
+                    comprobarListaVaciaContratos();
+                }, 400);
+            }
             lanzarNotificacionGamer("exito", "Juego Eliminado", "Se ha quitado el juego de tu biblioteca.");
-            setTimeout(() => { location.reload(); }, 1000);
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "Error al eliminar");
-        }
-    });
+            } else {
+                lanzarNotificacionGamer(
+                    "error",
+                    "Error",
+                    datos.message || "Error al eliminar",
+                );
+                setTimeout(() => { location.reload(); }, 550);
+            }
+        });
 }
 
 // 6. CONTROL DE FILTRADO DE BACKLOG
@@ -232,7 +384,9 @@ function filtrarBacklog(estadoFiltro, botonActivo) {
     botones.forEach((btn) => btn.classList.remove("active"));
     botonActivo.classList.add("active");
 
-    const tarjetas = document.querySelectorAll("#contenedor-backlog-juegos .game-card-premium");
+    const tarjetas = document.querySelectorAll(
+        "#contenedor-backlog-juegos .game-card-premium",
+    );
 
     tarjetas.forEach((tarjeta) => {
         const estadoTarjeta = tarjeta.getAttribute("data-estado");
@@ -245,4 +399,24 @@ function filtrarBacklog(estadoFiltro, botonActivo) {
             tarjeta.style.display = "none";
         }
     });
+}
+
+function comprobarListaVaciaContratos() {
+    const contenedor = document.querySelector(".contratos-grid-wrapper-premium");
+    // Si ya no quedan tarjetas de contrato dentro de la lista...
+    if (contenedor && contenedor.querySelectorAll(".tarjeta-contrato-gamer-premium").length === 0) {
+        // Localizamos la sección global de contratos para inyectar el estado vacío original
+        const seccion = document.querySelector(".seccion-contrato-premium");
+        if (seccion) {
+            // Reemplazamos la rejilla por el diseño de "No tienes objetivos signed"
+            contenedor.remove(); 
+            const divVacio = document.createElement("div");
+            divVacio.className = "contrato-vacio-card-premium";
+            divVacio.innerHTML = `
+                <p>No tienes ningún objetivo estratégico firmado para esta semana.</p>
+                <button onclick="abrirModalContrato()" class="btn-cta-dash-primary btn-firmar-contrato">📜 Firmar Primer Contrato</button>
+            `;
+            seccion.appendChild(divVacio);
+        }
+    }
 }

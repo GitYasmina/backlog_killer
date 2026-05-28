@@ -53,10 +53,10 @@ $stmt_contrato = $conexion->prepare("
     FROM contratos_semanales cs
     JOIN videojuegos v ON cs.id_videojuego = v.id
     WHERE cs.id_usuario = ? AND cs.completado = 0 AND cs.fecha_limite >= CURDATE()
-    LIMIT 1
+    ORDER BY cs.id ASC LIMIT 3
 ");
 $stmt_contrato->execute([$user_id]);
-$contrato_activo = $stmt_contrato->fetch();
+$contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <main class="dashboard-container dashboard-layout-moderno">
@@ -99,30 +99,41 @@ $contrato_activo = $stmt_contrato->fetch();
         </div>
     </section>
 
-    <section class="seccion-contrato-premium">
-        <h2 class="section-title-dash">Contrato Semanal 📜</h2>
-        <p class="contrato-subtitulo-premium">Gestiona tus micro-objetivos para mantener a raya la procrastinación.</p>
+  <section class="seccion-contrato-premium">
+        <div class="contrato-header-flex">
+            <div>
+                <h2 class="section-title-dash">Contratos Semanales 📜</h2>
+                <p class="contrato-subtitulo-premium">Gestiona tus micro-objetivos activos (Máximo 3 por semana).</p>
+            </div>
+            <?php if (count($contratos_activos) < 3): ?>
+                <button onclick="abrirModalContrato()" class="btn-cta-dash-primary btn-firmar-flotante">📜 Firmar Objetivo</button>
+            <?php endif; ?>
+        </div>
 
-        <?php if (!$contrato_activo): ?>
+        <?php if (empty($contratos_activos)): ?>
             <div class="contrato-vacio-card-premium">
                 <p>No tienes ningún objetivo estratégico firmado para esta semana.</p>
-                <button onclick="abrirModalContrato()" class="btn-cta-dash-primary btn-firmar-contrato">📜 Firmar Contrato Semanal</button>
+                <button onclick="abrirModalContrato()" class="btn-cta-dash-primary btn-firmar-contrato">📜 Firmar Primer Contrato</button>
             </div>
         <?php else: ?>
-            <div class="tarjeta-contrato-gamer-premium">
-                <div class="contrato-img-wrapper">
-                    <img src="<?= (!empty($contrato_activo['imagen_url'])) ? $contrato_activo['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
-                </div>
-                <div class="contrato-cuerpo-premium">
-                    <span class="contrato-tag-juego-premium"><?= htmlspecialchars($contrato_activo['titulo']) ?></span>
-                    <h3>🎯 Misión: <?= htmlspecialchars($contrato_activo['objetivo']) ?></h3>
-                    <p class="contrato-recompensa-premium">💰 Recompensa: <span>+30 XP</span></p>
-                    <p class="contrato-fecha-premium">⏳ Plazo: hasta el <?= date('d/m/Y', strtotime($contrato_activo['fecha_limite'])) ?></p>
-                </div>
-                <div class="contrato-acciones-premium">
-                    <button onclick="completarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-dash check" title="¡Misión cumplida!">✔</button>
-                    <button onclick="cancelarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-dash delete" title="Romper contrato">✕</button>
-                </div>
+            <div class="contratos-grid-wrapper-premium">
+                <?php foreach ($contratos_activos as $contrato): ?>
+                    <div class="tarjeta-contrato-gamer-premium">
+                        <div class="contrato-img-wrapper">
+                            <img src="<?= (!empty($contrato['imagen_url'])) ? $contrato['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
+                        </div>
+                        <div class="contrato-cuerpo-premium">
+                            <span class="contrato-tag-juego-premium"><?= htmlspecialchars($contrato['titulo']) ?></span>
+                            <h3>🎯 Misión: <?= htmlspecialchars($contrato['objetivo']) ?></h3>
+                            <p class="contrato-recompensa-premium">💰 Recompensa: <span>+30 XP</span></p>
+                            <p class="contrato-fecha-premium">⏳ Plazo: hasta el <?= date('d/m/Y', strtotime($contrato['fecha_limite'])) ?></p>
+                        </div>
+                        <div class="contrato-acciones-premium">
+                            <button onclick="completarContrato(<?= $contrato['id'] ?>)" class="btn-action-dash check" title="¡Misión cumplida!">✔</button>
+                            <button onclick="cancelarContrato(<?= $contrato['id'] ?>)" class="btn-action-dash delete" title="Romper contrato">✕</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
     </section>
