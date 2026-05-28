@@ -330,4 +330,5 @@ $contrato_activo = $stmt_contrato->fetch();
 
 
 <script src="../assets/js/dashboard.js"></script>
+<script src="../assets/js/utils.js"></script>
 <?php include '../views/footer.php'; ?>

@@ -1,29 +1,3 @@
-
-// funcion para lanzar notificaciones personalizadas en el dashboard (logros, errores, éxitos)
-function lanzarNotificacionDashboard(tipo, tituloAlert, mensajeAlert) {
-    const toast = document.createElement("div");
-    toast.className = `toast-dinamico-premium ${tipo}`;
-    
-    let icono = "✔";
-    if (tipo === "logro") icono = "🏆";
-    if (tipo === "error") icono = "❌";
-
-    toast.innerHTML = `
-        <div class="toast-icono-box-dinamico">${icono}</div>
-        <div class="toast-texto-box-dinamico">
-            <h4>${tituloAlert}</h4>
-            <p>${mensajeAlert}</p>
-        </div>
-    `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = "desvanecerToastPremium 0.5s forwards ease-in-out";
-        setTimeout(() => { toast.remove(); }, 500);
-    }, 4000);
-}
-
 // 1. CONTROL GENERAL DE ESTADOS DE JUEGO
 function actualizarJuego(idVideojuego, accion) {
     if (accion === "terminado") {
@@ -40,13 +14,13 @@ function actualizarJuego(idVideojuego, accion) {
     .then((datos) => {
         if (datos.status === "success") {
             if (datos.logro) {
-                lanzarNotificacionDashboard("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
                 setTimeout(() => { location.reload(); }, 2000);
             } else {
                 location.reload();
             }
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "No se pudo actualizar el juego.");
+            lanzarNotificacionGamer("error", "Error", datos.message || "No se pudo actualizar el juego.");
         }
     });
 }
@@ -70,7 +44,7 @@ function enviarHorasModal() {
     nuevasHoras = parseInt(nuevasHoras);
 
     if (isNaN(nuevasHoras) || nuevasHoras <= 0) {
-        lanzarNotificacionDashboard("error", "Valor Incorrecto", "Introduce un número de horas mayor que cero.");
+        lanzarNotificacionGamer("error", "Valor Incorrecto", "Introduce un número de horas mayor que cero.");
         return;
     }
 
@@ -85,14 +59,14 @@ function enviarHorasModal() {
     .then((datos) => {
         if (datos.status === "success") {
             if (datos.logro) {
-                lanzarNotificacionDashboard("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
                 setTimeout(() => { location.reload(); }, 2000);
             } else {
-                lanzarNotificacionDashboard("exito", "Progreso Guardado", datos.message || "Horas actualizadas correctamente.");
+                lanzarNotificacionGamer("exito", "Progreso Guardado", datos.message || "Horas actualizadas correctamente.");
                 setTimeout(() => { location.reload(); }, 1200);
             }
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message);
+            lanzarNotificacionGamer("error", "Error", datos.message);
         }
     });
 }
@@ -130,14 +104,14 @@ function enviarResenaModal() {
     .then((datos) => {
         if (datos.status === "success") {
             if (datos.logro) {
-                lanzarNotificacionDashboard("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
                 setTimeout(() => { location.reload(); }, 2000);
             } else {
-                lanzarNotificacionDashboard("exito", "¡Juego Completado!", "La reseña se ha guardado con éxito.");
+                lanzarNotificacionGamer("exito", "¡Juego Completado!", "La reseña se ha guardado con éxito.");
                 setTimeout(() => { location.reload(); }, 1200);
             }
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "Hubo un error al guardar la reseña");
+            lanzarNotificacionGamer("error", "Error", datos.message || "Hubo un error al guardar la reseña");
         }
     })
     .catch((error) => {
@@ -161,7 +135,7 @@ function enviarContratoModal() {
     const objetivo = document.getElementById("contrato-objetivo").value;
 
     if (idVideojuego === "" || objetivo.trim() === "") {
-        lanzarNotificacionDashboard("error", "Campos Incompletos", "Selecciona un videojuego activo y describe tu meta.");
+        lanzarNotificacionGamer("error", "Campos Incompletos", "Selecciona un videojuego activo y describe tu meta.");
         return;
     }
 
@@ -177,7 +151,7 @@ function enviarContratoModal() {
         if (datos.status === "success") {
             location.reload();
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "Error al firmar el contrato");
+            lanzarNotificacionGamer("error", "Error", datos.message || "Error al firmar el contrato");
         }
     });
 }
@@ -192,14 +166,14 @@ function completarContrato(idContrato) {
     .then((datos) => {
         if (datos.status === "success") {
             if (datos.logro) {
-                lanzarNotificacionDashboard("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+                lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
                 setTimeout(() => { location.reload(); }, 2000);
             } else {
-                lanzarNotificacionDashboard("exito", "Misión Cumplida", "¡Contrato cumplido! Has recibido +30 XP.");
+                lanzarNotificacionGamer("exito", "Misión Cumplida", "¡Contrato cumplido! Has recibido +30 XP.");
                 setTimeout(() => { location.reload(); }, 1500);
             }
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "Error al completar el contrato");
+            lanzarNotificacionGamer("error", "Error", datos.message || "Error al completar el contrato");
         }
     });
 }
@@ -213,9 +187,10 @@ function cancelarContrato(idContrato) {
     .then((res) => res.json())
     .then((datos) => {
         if (datos.status === "success") {
-            location.reload();
+            lanzarNotificacionGamer("exito", "Contrato Cancelado", "El contrato ha sido cancelado exitosamente.");
+            setTimeout(() => { location.reload(); }, 1000);
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "Error al cancelar el contrato");
+            lanzarNotificacionGamer("error", "Error", datos.message || "Error al cancelar el contrato");
         }
     });
 }
@@ -243,10 +218,10 @@ function ejecutarEliminarJuego() {
     .then((res) => res.json())
     .then((datos) => {
         if (datos.status === "success") {
-            lanzarNotificacionDashboard("exito", "Juego Eliminado", "Se ha quitado el juego de tu biblioteca.");
+            lanzarNotificacionGamer("exito", "Juego Eliminado", "Se ha quitado el juego de tu biblioteca.");
             setTimeout(() => { location.reload(); }, 1000);
         } else {
-            lanzarNotificacionDashboard("error", "Error", datos.message || "Error al eliminar");
+            lanzarNotificacionGamer("error", "Error", datos.message || "Error al eliminar");
         }
     });
 }
