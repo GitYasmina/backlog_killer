@@ -120,5 +120,5 @@ sort($generos_existentes);
 
 <script src="../assets/js/utils.js"></script>
 <script src="../assets/js/ruleta.js"></script>
-
+<script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>

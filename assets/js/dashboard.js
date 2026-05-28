@@ -420,3 +420,21 @@ function comprobarListaVaciaContratos() {
         }
     }
 }
+
+// ==========================================================================
+// CONTROL DEL MODAL DE LOGOUT
+// ==========================================================================
+
+function confirmarCerrarSesion() {
+    const modal = document.getElementById("modal-logout-confirmar");
+    if (modal) {
+        modal.classList.add("active");
+    }
+}
+
+function cerrarModalLogout() {
+    const modal = document.getElementById("modal-logout-confirmar");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}

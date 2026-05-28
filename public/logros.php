@@ -82,5 +82,5 @@ $logros = $stmt_logros->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </div>
 </main>
-
+<script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>

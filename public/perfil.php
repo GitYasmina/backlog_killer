@@ -84,7 +84,7 @@ if ($porcentaje_xp > 100) {
 
                 <div class="perfil-wrapper-botones-horizontal">
                     <button type="submit" class="btn-cta-perfil">GUARDAR CAMBIOS</button>
-                    <a href="../app/logout.php" class="logout-link-action">CERRAR SESIÓN</a>
+                    <a href="#" class="logout-link-action" onclick="confirmarCerrarSesion()">CERRAR SESIÓN</a>
                 </div>
             </div>
 
@@ -131,4 +131,5 @@ if ($porcentaje_xp > 100) {
             }
         });
     </script>
+    <script src="../assets/js/dashboard.js"></script>
     <?php include '../views/footer.php'; ?>

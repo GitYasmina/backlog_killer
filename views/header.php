@@ -23,9 +23,13 @@
                         <li><a href="dashboard.php">Biblioteca</a></li>
                         <li><a href="buscar_juego.php">Buscar</a></li>
                         <li><a href="ruleta.php">Ruleta</a></li>
-                        <a href="perfil.php" class="nav-link">Mi Perfil</a>
-                        <a href="logros.php" class="nav-link">Mis Logros</a>
-                        <li><a href="logout.php">Salir</a></li>
+                        <li><a href="perfil.php">Mi Perfil</a></li>
+                        <li><a href="logros.php">Mis Logros</a></li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="confirmarCerrarSesion()" class="btn-logout-premium" title="Cerrar Sesión">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </a>
+                        </li>
                     <?php else: ?>
                         <li><a href="index.php">Inicio</a></li>
                         <li><a href="login.php">Login</a></li>
@@ -35,3 +39,16 @@
             </nav>
         </div>
     </header>
+
+    <div id="modal-logout-confirmar" class="modal-overlay">
+        <div class="modal-content modal-danger-premium">
+            <div class="modal-danger-icon">🚪</div>
+            <h3>¿Cerrar Sesión?</h3>
+            <p>Estás a punto de salir de la plataforma. Se mantendrá a salvo tu racha diaria y el progreso actual de tus juegos.</p>
+
+            <div class="modal-actions">
+                <button onclick="cerrarModalLogout()" class="btn-modal-cancel">Volver al Vicio</button>
+                <a href="../app/logout.php" class="btn-modal-danger-execute" style="text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center;">Salir del Juego</a>
+            </div>
+        </div>
+    </div>
