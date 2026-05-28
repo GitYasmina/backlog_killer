@@ -18,62 +18,79 @@ const traduccionGeneros = {
   Arcade: "Arcade",
 };
 
-// se activa cada vez que escribimos en el buscador
+// se activa cada vez que escribimos en el buscador, pero con un sistema de debounce para no saturar la API
 function buscar() {
-  var texto = document.getElementById("game-search").value;
-  var contenedor = document.getElementById("search-results");
+  const texto = document.getElementById("game-search").value.trim();
+  const contenedor = document.getElementById("search-results");
+  const spinner = document.getElementById("loading-spinner");
 
-  // si hay menos de 3 letras, no hace nada
-  if (texto.length < 3) return;
+  if (texto.length < 3) {
+    contenedor.innerHTML = `
+      <div class="empty-state-buscador">
+          <p>Escribe el nombre de un videojuego arriba para buscar... 🚀</p>
+      </div>`;
+    spinner.style.display = "none";
+    return;
+  }
 
-  // conexión a la API de RAWG
-  fetch(
-    "https://api.rawg.io/api/games?key=" +
-      apiKey +
-      "&search=" +
-      texto +
-      "&page_size=6",
-  )
+  spinner.style.display = "block";
+  contenedor.innerHTML = `<div class="empty-state-buscador"><p>Consultando con RAWG...</p></div>`;
+
+  fetch(`https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(texto)}&page_size=6`)
     .then((res) => res.json())
     .then((datos) => {
-      contenedor.innerHTML = ""; // Limpiamos resultados anteriores
+      spinner.style.display = "none";
 
-      // recorremos los resultados para las tarjetas
+      if (!datos.results || datos.results.length === 0) {
+        contenedor.innerHTML = `
+          <div class="empty-state-buscador">
+              <p>❌ No se ha encontrado ningún videojuego llamado "${texto}" en la base de datos de RAWG. Revisa si está bien escrito.</p>
+          </div>`;
+        return;
+      }
+
+      contenedor.innerHTML = ""; 
+
       datos.results.forEach((juego) => {
-        var generoAPI =
-          juego.genres && juego.genres.length > 0
-            ? juego.genres[0].name
-            : "Desconocido";
-        var generoReal = traduccionGeneros[generoAPI] || generoAPI;
-
-        var duracionReal = juego.playtime || 30;
-        var tituloLimpio = juego.name.replace(/"/g, "&quot;");
-        // creamos la tarjeta guardando las variables de forma segura en atributos data-*
-        var card = `
-        <div class="game-card">
-            <img src="${juego.background_image || "../assets/img/no-image.png"}" class="game-poster">
-            <div class="game-info">
+        const generoAPI = juego.genres && juego.genres.length > 0 ? juego.genres[0].name : "Desconocido";
+        const generoReal = traduccionGeneros[generoAPI] || generoAPI;
+        const duracionReal = juego.playtime || 30;
+        const tituloLimpio = juego.name.replace(/"/g, "&quot;");
+        
+        const card = `
+        <div class="buscador-game-card">
+            <div class="buscador-poster-wrapper">
+                <img src="${juego.background_image || "../assets/img/no-image.png"}" alt="${tituloLimpio}">
+            </div>
+            <div class="buscador-info-box">
                 <h3>${tituloLimpio}</h3>
-                <span class="game-tag">${generoReal}</span>
+                <span class="buscador-tag-genero">${generoReal}</span>
                 <button 
-                    class="btn-add"
+                    class="btn-add-buscador-premium"
                     data-id="${juego.id}"
                     data-titulo="${tituloLimpio}"
                     data-imagen="${juego.background_image || ""}"
                     data-genero="${generoReal}"
                     data-duracion="${duracionReal}"
                     onclick="manejadorAñadir(this)">
-                    Añadir a mi lista
+                    ➕ Añadir a mi lista
                 </button>
             </div>
         </div>
-    `;
+        `;
         contenedor.innerHTML += card;
       });
+    })
+    .catch((err) => {
+      console.error("Error al conectar con RAWG:", err);
+      spinner.style.display = "none";
+      contenedor.innerHTML = `
+        <div class="empty-state-buscador">
+            <p>⚠ Hubo un problema de conexión con la API de RAWG. Inténtalo de nuevo en unos instantes.</p>
+        </div>`;
     });
 }
 
-// función intermedia que recupera los datos del botón de forma nativa y segura
 function manejadorAñadir(boton) {
   const idApi = boton.getAttribute("data-id");
   const titulo = boton.getAttribute("data-titulo");
@@ -81,41 +98,48 @@ function manejadorAñadir(boton) {
   const genero = boton.getAttribute("data-genero");
   const duracion = boton.getAttribute("data-duracion");
 
-  // llamamos a la función de envío pasándole los datos limpios
   añadir(idApi, titulo, imagen, genero, duracion);
 }
 
-// funcion que envía los datos recogidos por POST a PHP
+// Envío de datos asíncrono modificado sin un solo alert nativo
 function añadir(idApi, titulo, imagen, genero, duracion) {
   fetch("../app/add_game.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body:
-      "id_api=" +
-      idApi +
-      "&titulo=" +
-      encodeURIComponent(titulo) +
-      "&imagen=" +
-      encodeURIComponent(imagen) +
-      "&genero=" +
-      encodeURIComponent(genero) +
-      "&duracion=" +
-      duracion,
+    body: `id_api=${idApi}&titulo=${encodeURIComponent(titulo)}&imagen=${encodeURIComponent(imagen)}&genero=${encodeURIComponent(genero)}&duracion=${duracion}`,
   })
     .then((res) => res.json())
     .then((datos) => {
       if (datos.status === "success") {
-        // Si la respuesta de PHP trae un logro, lanzamos un alert especial
         if (datos.logro) {
-          alert("🏆 ¡LOGRO DESBLOQUEADO! 🏆\n\nHas conseguido: " + datos.logro);
+          // Lanza el aviso premium de Logro
+          lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
         } else {
-          alert("¡" + titulo + " guardado en tu biblioteca!");
+          // Lanza el aviso premium de éxito normal
+          lanzarNotificacionGamer("exito", "Biblioteca Actualizada", `¡${titulo} se ha guardado correctamente!`);
         }
       } else {
-        alert("Este juego ya lo tienes o hubo un error.");
+        // Lanza el aviso de error
+        lanzarNotificacionGamer("error", "Acción Cancelada", datos.message || "Este juego ya está en tu biblioteca.");
       }
     });
 }
 
-// escucha las pulsaciones de teclas en el input de búsqueda
-document.getElementById("game-search").addEventListener("keyup", buscar);
+let temporizadorDebounce;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const inputBuscar = document.getElementById("game-search");
+    
+    if (inputBuscar) {
+        // En vez de llamar a buscar() a lo loco, controlamos el flujo
+        inputBuscar.addEventListener("keyup", () => {
+            // Borramos el temporizador anterior si el usuario sigue tecleando rápido
+            clearTimeout(temporizadorDebounce);
+            
+            // Creamos uno nuevo. Solo si pasa medio segundo sin teclear, se ejecuta la búsqueda
+            temporizadorDebounce = setTimeout(() => {
+                buscar();
+            }, 500); // 500 milisegundos de tregua para la API
+        });
+    }
+});
