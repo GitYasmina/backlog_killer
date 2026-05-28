@@ -8,7 +8,6 @@ require_once '../views/header.php';
 require_once '../app/db.php';
 require_once '../app/checkin_helper.php';
 
-
 // traemos estadísticas básicas para mostrar en el dashboard
 $user_id = $_SESSION['user_id'];
 
@@ -60,8 +59,8 @@ $stmt_contrato->execute([$user_id]);
 $contrato_activo = $stmt_contrato->fetch();
 ?>
 
-<main class="dashboard-container">
-    <!-- AVISO VISUAL DEL CHECK-IN DIARIO -->
+<main class="dashboard-container dashboard-layout-moderno">
+
     <?php if ($datos_checkin['mostrar_aviso']): ?>
         <div class="notificacion-toast" id="alerta-checkin">
             <div class="contenido-toast">
@@ -75,97 +74,120 @@ $contrato_activo = $stmt_contrato->fetch();
         </div>
     <?php endif; ?>
 
-    <section class="dashboard-header">
-        <h1>Mi Biblioteca</h1>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-value"><?= $stats['total'] ?? 0 ?></span>
-                <span class="stat-label">Juegos Totales</span>
+    <section class="dashboard-header-premium">
+        <div class="header-titulo-wrapper">
+            <h1>Mi Biblioteca</h1>
+            <div class="dashboard-actions-btns">
+                <a href="buscar_juego.php" class="btn-cta-dash-primary">➕ Añadir Juego</a>
+                <a href="ruleta.php" class="btn-cta-dash-secondary">🎲 Backlog Killer</a>
             </div>
-            <div class="stat-card">
-                <span class="stat-value"><?= $stats['pendientes'] ?? 0 ?></span>
-                <span class="stat-label">Pendientes</span>
+        </div>
+
+        <div class="stats-grid-premium">
+            <div class="stat-card-premium stat-total">
+                <span class="stat-value-premium"><?= $stats['total'] ?? 0 ?></span>
+                <span class="stat-label-premium">Juegos Totales</span>
             </div>
-            <div class="stat-card">
-                <span class="stat-value"><?= $stats['progreso'] ?? 0 ?></span>
-                <span class="stat-label">En Curso</span>
+            <div class="stat-card-premium stat-pendiente">
+                <span class="stat-value-premium"><?= $stats['pendientes'] ?? 0 ?></span>
+                <span class="stat-label-premium">Pendientes</span>
+            </div>
+            <div class="stat-card-premium stat-progreso">
+                <span class="stat-value-premium"><?= $stats['progreso'] ?? 0 ?></span>
+                <span class="stat-label-premium">En Curso</span>
             </div>
         </div>
     </section>
 
-    <section class="dashboard-actions">
-        <a href="buscar_juego.php" class="btn-primary">➕ Añadir Juego</a>
-        <a href="ruleta.php" class="btn-secondary">🎲 Backlog Killer</a>
-    </section>
-    <section class="seccion-contrato">
-        <h2>Contrato Semanal 📜</h2>
-        <p class="contrato-subtitulo">Gestiona tus micro-objetivos para mantener a raya la procrastinación.</p>
+    <section class="seccion-contrato-premium">
+        <h2 class="section-title-dash">Contrato Semanal 📜</h2>
+        <p class="contrato-subtitulo-premium">Gestiona tus micro-objetivos para mantener a raya la procrastinación.</p>
 
         <?php if (!$contrato_activo): ?>
-            <!-- si el usuario no tiene metas fijadas -->
-            <div class="contrato-vacio-card">
+            <div class="contrato-vacio-card-premium">
                 <p>No tienes ningún objetivo estratégico firmado para esta semana.</p>
-                <button onclick="abrirModalContrato()" class="btn-primary">📜 Firmar Contrato Semanal</button>
+                <button onclick="abrirModalContrato()" class="btn-cta-dash-primary btn-firmar-contrato">📜 Firmar Contrato Semanal</button>
             </div>
         <?php else: ?>
-            <!-- muestra el contrato neón personalizado -->
-            <div class="tarjeta-contrato-gamer">
-                <img src="<?= (!empty($contrato_activo['imagen_url'])) ? $contrato_activo['imagen_url'] : '../assets/img/no-image.png' ?>" class="contrato-poster" alt="Portada">
-                <div class="contrato-cuerpo">
-                    <span class="contrato-tag-juego"><?= htmlspecialchars($contrato_activo['titulo']) ?></span>
-                    <h3>🎯 Misión: <?= htmlspecialchars($contrato_activo['objetivo']) ?></h3>
-                    <p class="contrato-recompensa">💰 Recompensa: <strong>+30 XP</strong></p>
-                    <p class="contrato-fecha">⏳ Plazo: hasta el <?= date('d/m/Y', strtotime($contrato_activo['fecha_limite'])) ?></p>
+            <div class="tarjeta-contrato-gamer-premium">
+                <div class="contrato-img-wrapper">
+                    <img src="<?= (!empty($contrato_activo['imagen_url'])) ? $contrato_activo['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
                 </div>
-                <div class="contrato-acciones">
-                    <button onclick="completarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-check" title="¡Misión cumplida!">✅</button>
-                    <button onclick="cancelarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-delete" title="Romper contrato">🗑️</button>
+                <div class="contrato-cuerpo-premium">
+                    <span class="contrato-tag-juego-premium"><?= htmlspecialchars($contrato_activo['titulo']) ?></span>
+                    <h3>🎯 Misión: <?= htmlspecialchars($contrato_activo['objetivo']) ?></h3>
+                    <p class="contrato-recompensa-premium">💰 Recompensa: <span>+30 XP</span></p>
+                    <p class="contrato-fecha-premium">⏳ Plazo: hasta el <?= date('d/m/Y', strtotime($contrato_activo['fecha_limite'])) ?></p>
+                </div>
+                <div class="contrato-acciones-premium">
+                    <button onclick="completarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-dash check" title="¡Misión cumplida!">✔</button>
+                    <button onclick="cancelarContrato(<?= $contrato_activo['id'] ?>)" class="btn-action-dash delete" title="Romper contrato">✕</button>
                 </div>
             </div>
         <?php endif; ?>
     </section>
 
-    <section class="games-section">
-        <h2>Mi Backlog Activo 🎮</h2>
-        <div class="games-grid">
+    <section class="games-section-premium">
+        <div class="games-section-header-flex">
+            <h2 class="section-title-dash">Mi Backlog Activo 🎮</h2>
+
+            <div class="dashboard-filter-tabs">
+                <button class="filter-tab-btn active" onclick="filtrarBacklog('todos', this)">Todos</button>
+                <button class="filter-tab-btn" onclick="filtrarBacklog('pendiente', this)">Pendientes</button>
+                <button class="filter-tab-btn" onclick="filtrarBacklog('en_progreso', this)">En Curso</button>
+            </div>
+        </div>
+
+        <div class="games-grid-premium" id="contenedor-backlog-juegos">
             <?php if (empty($juegos_activos)): ?>
-                <div class="empty-state">
-                    <p>No tienes juegos pendientes ni en curso. ¡Buen trabajo!</p>
+                <div class="empty-state-dash">
+                    <p>No tienes juegos pendientes ni en curso. ¡Buen trabajo! 🔥</p>
                     <a href="buscar_juego.php">Añadir más juegos</a>
                 </div>
                 <?php else:
                 foreach ($juegos_activos as $juego):
                     $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
                     $porcentaje = round(($juego['horas_jugadas'] / $horas_totales) * 100);
+
+                    $es_completacionista = ($porcentaje > 100);
                     if ($porcentaje > 100) $porcentaje = 100;
                 ?>
-                    <div class="game-card">
-                        <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" class="game-poster-dash" alt="Portada">
-                        <div class="game-info">
+                    <div class="game-card-premium" data-estado="<?= htmlspecialchars($juego['estado']) ?>">
+                        <div class="game-poster-wrapper">
+                            <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
+                            <span class="status-badge-premium <?= $juego['estado'] ?>"><?= ucfirst(str_replace('_', ' ', $juego['estado'])) ?></span>
+                        </div>
+                        <div class="game-info-premium">
                             <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
-                            <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
-                            <span class="status-badge <?= $juego['estado'] ?>"><?= ucfirst(str_replace('_', ' ', $juego['estado'])) ?></span>
+                            <span class="game-tag-premium"><?= htmlspecialchars($juego['genero']) ?></span>
 
                             <?php if ($juego['estado'] === 'en_progreso'): ?>
-                                <div class="progress-container">
-                                    <div class="progress-bar-bg">
-                                        <div class="progress-bar-fill" style="width: <?= $porcentaje ?>%"></div>
+                                <div class="progress-container-dash">
+                                    <div class="progress-bar-bg-dash">
+                                        <div class="progress-bar-fill-dash <?= $es_completacionista ? 'barra-completacionista-pulsante' : '' ?>" style="width: <?= $porcentaje ?>%"></div>
                                     </div>
-                                    <span class="progress-text"><?= $juego['horas_jugadas'] ?>h de <?= $horas_totales ?>h completadas (<?= $porcentaje ?>%)</span>
+
+                                    <span class="progress-text-dash">
+                                        <?php if ($es_completacionista): ?>
+                                            <span class="txt-modo-completacionista">🌟 ¡Superado! Modo completacionista (<?= $juego['horas_jugadas'] ?>h / <?= $horas_totales ?>h)</span>
+                                        <?php else: ?>
+                                            <?= $juego['horas_jugadas'] ?>h / <?= $horas_totales ?>h (<?= $porcentaje ?>%)
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="card-actions">
+                            <div class="card-actions-premium">
                                 <?php if ($juego['estado'] === 'pendiente'): ?>
-                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-play" title="Empezar a jugar">🎮</button>
+                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-dash play" title="Empezar a jugar">▶ Jugar</button>
                                 <?php endif; ?>
 
                                 <?php if ($juego['estado'] === 'en_progreso'): ?>
-                                    <button onclick="cambiarHoras(<?= $juego['id_videojuego'] ?>)" class="btn-action-edit" title="Actualizar progreso">📝</button>
-                                    <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-check" title="Marcar como terminado">✅</button>
+                                    <button type="button" onclick="cambiarHoras(<?= $juego['id_videojuego'] ?>)" class="btn-action-dash edit" title="Actualizar progreso">📝 Horas</button>
+                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-dash check" title="Marcar como terminado">✅ Fin</button>
                                 <?php endif; ?>
 
-                                <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'eliminar')" class="btn-action-delete" title="Eliminar de la biblioteca">🗑️</button>
+                                <button type="button" onclick="confirmarEliminarJuego(<?= $juego['id_videojuego'] ?>, '<?= addslashes($juego['titulo']) ?>')" class="btn-action-dash delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -174,35 +196,35 @@ $contrato_activo = $stmt_contrato->fetch();
         </div>
     </section>
 
-    <hr style="border: 0; border-top: 1px solid #252525; margin: 40px 0;">
-
-    <section class="games-section">
-        <h2>Últimas Joyas Completadas 🏆</h2>
-        <div class="games-grid">
+    <section class="games-section-premium">
+        <h2 class="section-title-dash">Últimas Joyas Completadas 🏆</h2>
+        <div class="games-grid-premium">
             <?php if (empty($juegos_completados)): ?>
-                <div class="empty-state">
-                    <p>Aún no has completado ningún juego. ¡Toca viciar! 🔥</p>
+                <div class="empty-state-dash">
+                    <p>Aún no has completado ningún juego. ¡Toca viciar! 🕹</p>
                 </div>
                 <?php else:
                 foreach ($juegos_completados as $juego):
                     $horas_totales = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
                 ?>
-                    <div class="game-card game-card-completed">
-                        <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" class="game-poster-dash" alt="Portada">
-                        <div class="game-info">
+                    <div class="game-card-premium game-card-completed-premium">
+                        <div class="game-poster-wrapper">
+                            <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
+                            <span class="status-badge-premium terminado">Terminado ✅</span>
+                        </div>
+                        <div class="game-info-premium">
                             <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
-                            <span class="game-tag"><?= htmlspecialchars($juego['genero']) ?></span>
-                            <span class="status-badge terminado" style="background: #193222; color: #2ecc71;">Terminado ✅</span>
+                            <span class="game-tag-premium"><?= htmlspecialchars($juego['genero']) ?></span>
 
-                            <div class="progress-container">
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" style="width: 100%; background-color: #2ecc71;"></div>
+                            <div class="progress-container-dash">
+                                <div class="progress-bar-bg-dash">
+                                    <div class="progress-bar-fill-dash completed-bar" style="width: 100%;"></div>
                                 </div>
-                                <span class="progress-text">¡Completado en <?= $horas_totales ?>h! 🌟</span>
+                                <span class="progress-text-dash success-txt">¡Completado en <?= $horas_totales ?>h! 🌟</span>
                             </div>
 
-                            <div class="card-actions">
-                                <button onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'eliminar')" class="btn-action-delete" title="Eliminar de la biblioteca">🗑️</button>
+                            <div class="card-actions-premium">
+                                <button type="button" onclick="confirmarEliminarJuego(<?= $juego['id_videojuego'] ?>, '<?= addslashes($juego['titulo']) ?>')" class="btn-action-dash delete" title="Eliminar de la biblioteca"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -212,96 +234,100 @@ $contrato_activo = $stmt_contrato->fetch();
     </section>
 </main>
 
-<!-- modal para registrar horas de juego -->
+<!-- ==========================================================================
+   MODALES DEL SISTEMA (Horas, Reseñas, Contrato Semanal, Confirmación de Eliminación)
+   ========================================================================== -->
+
+<!-- 1. Modal para registrar horas de juego -->
 <div id="modal-horas" class="modal-overlay">
     <div class="modal-content">
         <h3>Registrar Sesión de Juego 🎮</h3>
         <p>¿Cuántas horas has jugado en esta sesión? Se sumarán a tu progreso actual.</p>
-
         <input type="hidden" id="modal-juego-id">
-
         <div class="modal-input-group">
             <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 2" autofocus>
             <span>horas</span>
         </div>
-
         <div class="modal-actions">
             <button onclick="cerrarModal()" class="btn-modal-cancel">Cancelar</button>
             <button onclick="enviarHorasModal()" class="btn-modal-save">Guardar progreso</button>
         </div>
     </div>
 </div>
-<!-- modal valoracion y reseña -->
+
+<!-- 2. Modal valoración y reseña -->
 <div id="modal-resena" class="modal-overlay">
     <div class="modal-content">
         <h3>¡Juego Completado! 🏆</h3>
         <p>Deja tu valoración final para cerrar este ciclo de tu backlog.</p>
-
         <input type="hidden" id="modal-resena-juego-id">
-
-        <!-- contenedor de estrellas de derecha a izquierda para la lógica CSS -->
         <div class="selector-estrellas">
             <input type="radio" id="estrella5" name="puntuacion" value="5">
             <label for="estrella5" title="Excelente">★</label>
-
             <input type="radio" id="estrella4" name="puntuacion" value="4">
             <label for="estrella4" title="Muy bueno">★</label>
-
             <input type="radio" id="estrella3" name="puntuacion" value="3">
             <label for="estrella3" title="Bueno">★</label>
-
             <input type="radio" id="estrella2" name="puntuacion" value="2">
             <label for="estrella2" title="Regular">★</label>
-
             <input type="radio" id="estrella1" name="puntuacion" value="1">
             <label for="estrella1" title="Malo">★</label>
         </div>
-
         <div class="modal-input-group-textarea">
             <label for="modal-comentario-input">Tu opinión (opcional):</label>
             <textarea id="modal-comentario-input" rows="4" placeholder="¿Qué te ha parecido la historia, la jugabilidad...?"></textarea>
         </div>
-
         <div class="modal-actions">
             <button onclick="cerrarModalResena()" class="btn-modal-cancel">Saltar</button>
             <button onclick="enviarResenaModal()" class="btn-modal-save">Guardar reseña</button>
         </div>
     </div>
+</div>
 
+<!-- 3. Modal para redactar el contrato semanal -->
+<div id="modal-contrato" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Redactar Contrato Semanal ✍️</h3>
+        <p>Establece un objetivo a corto plazo para avanzar de forma constante.</p>
+        <div class="modal-input-group-vertical">
+            <label for="contrato-juego">¿Para qué juego es la misión?</label>
+            <select id="contrato-juego" class="select-ruleta-perfil">
+                <?php if (empty($juegos_activos)): ?>
+                    <option value="">-- No tienes juegos activos --</option>
+                    <?php else:
+                    foreach ($juegos_activos as $ja): ?>
+                        <option value="<?= $ja['id_videojuego'] ?>"><?= htmlspecialchars($ja['titulo']) ?> (<?= ucfirst($ja['estado']) ?>)</option>
+                <?php endforeach;
+                endif; ?>
+            </select>
+        </div>
+        <div class="modal-input-group-vertical">
+            <label for="contrato-objective">¿Cuál es tu meta específica?</label>
+            <input type="text" id="contrato-objetivo" placeholder="Ej: Superar el capítulo 3 / Limpiar la zona norte...">
+        </div>
+        <div class="modal-actions">
+            <button onclick="cerrarModalContrato()" class="btn-modal-cancel">Cancelar</button>
+            <button onclick="enviarContratoModal()" class="btn-modal-save">Firmar Trato</button>
+        </div>
+    </div>
 
-    <!-- modal para redactar el contrato semanal -->
-    <div id="modal-contrato" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Redactar Contrato Semanal ✍️</h3>
-            <p>Establece un objetivo a corto plazo para avanzar de forma constante.</p>
+    <!-- 4. Modal de Confirmación para Eliminar Juegos -->
+</div>
+<div id="modal-confirmar-eliminar" class="modal-overlay">
+    <div class="modal-content modal-danger-premium">
+        <div class="modal-danger-icon">⚠</div>
+        <h3>¿Eliminar de la biblioteca?</h3>
+        <p>Estás a punto de borrar <strong id="eliminar-juego-titulo">este juego</strong>. Esta acción no se puede deshacer y perderás el registro de tus horas jugadas.</p>
 
-            <div class="modal-input-group-vertical">
-                <label for="contrato-juego">¿Para qué juego activo es la misión?</label>
-                <select id="contrato-juego" class="select-ruleta-perfil">
-                    <?php if (empty($juegos_activos)): ?>
-                        <option value="">-- No tienes juegos activos --</option>
-                        <?php else:
-                        foreach ($juegos_activos as $ja):
-                            if ($ja['estado'] === 'en_progreso'): ?>
-                                <option value="<?= $ja['id_videojuego'] ?>"><?= htmlspecialchars($ja['titulo']) ?></option>
-                    <?php endif;
-                        endforeach;
-                    endif; ?>
-                </select>
-            </div>
+        <input type="hidden" id="eliminar-juego-id">
 
-            <div class="modal-input-group-vertical">
-                <label for="contrato-objetivo">¿Cuál es tu meta específica?</label>
-                <input type="text" id="contrato-objetivo" placeholder="Ej: Superar el capítulo 3 / Limpiar la zona norte...">
-            </div>
-
-            <div class="modal-actions">
-                <button onclick="cerrarModalContrato()" class="btn-modal-cancel">Cancelar</button>
-                <button onclick="enviarContratoModal()" class="btn-modal-save">Firmar Trato</button>
-            </div>
+        <div class="modal-actions">
+            <button onclick="cerrarModalEliminar()" class="btn-modal-cancel">Cancelar</button>
+            <button onclick="ejecutarEliminarJuego()" class="btn-modal-danger-execute">Sí, Eliminar</button>
         </div>
     </div>
 </div>
+
 
 <script src="../assets/js/dashboard.js"></script>
 <?php include '../views/footer.php'; ?>
