@@ -31,12 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function actualizarPorcionesYFiltros() {
   if (estaGirando) return;
 
-  const disco = document.getElementById("disco-ruleta");
-  const boton = document.getElementById("btn-girar");
   const filtroGenero = document.getElementById("genero-ruleta");
   const filtroTiempo = document.getElementById("tiempo-ruleta");
+  const panelVisual = document.querySelector(".ruleta-panel-visual");
+  const boton = document.getElementById("btn-generar") || document.getElementById("btn-girar"); 
 
-  if (!disco) return; // rompe la función si no encuentra la estructura en el DOM
+  if (!panelVisual) return; 
 
   const generoSeleccionado = filtroGenero ? filtroGenero.value : "todos";
   const tiempoSeleccionado = filtroTiempo ? filtroTiempo.value : "cualquiera";
@@ -65,32 +65,57 @@ function actualizarPorcionesYFiltros() {
     });
   }
 
-  // si no hay juegos que cumplan los filtros, mostramos un mensaje en el disco y deshabilitamos el botón
+  // CASO A: Si no hay juegos que cumplan los filtros
   if (juegosFiltrados.length === 0) {
-    disco.removeAttribute("style");
-    disco.innerHTML = `
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#9ca3af; font-size:0.85rem; text-align:center; width:80%; font-weight:bold;">
-                No hay juegos que cumplan los requisitos. 🎮
-            </div>
-        `;
     if (boton) {
       boton.disabled = true;
-      boton.innerText = "¡MATAR BACKLOG!";
+      boton.innerText = "¡SIN VÍCTIMAS!";
+      boton.style.opacity = "0.5";
     }
+    
+    panelVisual.innerHTML = `
+        <div class="ruleta-vacia-filtro">
+            <div class="ruleta-vacia-icono">🎈</div>
+            <h3>No quedan víctimas</h3>
+            <p>No tienes ningún juego de género <strong>${generoSeleccionado}</strong> con esa duración en tu lista de pendientes.</p>
+        </div>
+    `;
     return;
   }
 
-  if (boton) boton.disabled = false;
+  // CASO B: Si SÍ hay juegos válidos, reconstruimos la estructura limpia
+  if (boton) {
+    boton.disabled = false;
+    boton.innerText = "¡MATAR BACKLOG!";
+    boton.style.opacity = "1";
+  }
 
+  // inyectamos la estructura original del juego de la ruleta
+  panelVisual.innerHTML = `
+      <div class="ruleta-wrapper">
+          <div class="ruleta-puntero"></div>
+          <div id="disco-ruleta" class="ruleta-disco"></div>
+          <div class="ruleta-centro"></div>
+      </div>
+  `;
 
-  disco.style.transition = "none"; // quitamos la transición para reposicionar los sectores sin animación
-  disco.style.transform = "rotate(0deg)"; // reseteamos la posición del disco a 0 grados para evitar acumulaciones extrañas de rotación
+  // capturamos el NUEVO disco que se acaba de crear en las líneas de arriba
+  const nuevoDisco = document.getElementById("disco-ruleta");
+  if (!nuevoDisco) return; // Seguridad por si acaso
+
+  // reseteamos las físicas de rotación antiguas
+  nuevoDisco.style.transition = "none"; 
+  nuevoDisco.style.transform = "rotate(0deg)"; 
   gradosActuales = 0;
-  disco.offsetHeight; // forzamos reflow para resetear la transición sin animación
-  disco.style.transition = "transform 4.5s cubic-bezier(0.1, 0.8, 0.25, 1)"; // transición suave para el giro
-  disco.innerHTML = ""; // limpiamos por completo el disco para reinyectar las porciones y textos
+  
+  // forzamos un reflow del navegador para aplicar el reinicio físico inmediatamente
+  nuevoDisco.offsetHeight; 
+  
+  // devolvemos la animación de giro premium
+  nuevoDisco.style.transition = "transform 4.5s cubic-bezier(0.1, 0.8, 0.25, 1)"; 
+  nuevoDisco.innerHTML = ""; 
 
-
+  // --- RENDERIZADO DE LAS PORCIONES ---
   const totalJuegos = juegosFiltrados.length;
   const gradosPorSector = 360 / totalJuegos;
   let gradienteConicoString = "conic-gradient(";
@@ -105,16 +130,15 @@ function actualizarPorcionesYFiltros() {
     const divTexto = document.createElement("div");
     divTexto.className = "ruleta-porcion-texto";
 
-    // calculo del angulo: sumamos 90 grados para que el texto quede centrado respecto a la aguja (que apunta hacia arriba, 0 grados)
     const anguloTexto = inicioGrados + gradosPorSector / 2 + 90;
     divTexto.style.transform = `rotate(${anguloTexto}deg)`;
     divTexto.textContent = juego.titulo;
 
-    disco.appendChild(divTexto);
+    nuevoDisco.appendChild(divTexto);
   });
 
   gradienteConicoString += ")";
-  disco.style.background = gradienteConicoString;
+  nuevoDisco.style.background = gradienteConicoString;
 }
 
 // FUNCIÓN INLINE ACTIVADA POR EL ONCLICK DEL BOTÓN EN EL PHP
@@ -160,49 +184,64 @@ function girarRuleta() {
 // ==========================================================================
 
 function mostrarPopUpGanador(juegoElegido) {
-    // Vinculamos la ID que tu backend lee (id_videojuego)
-    document.getElementById("reto-juego-id").value = juegoElegido.id_videojuego;
-    document.getElementById("reto-juego-titulo").textContent = juegoElegido.titulo;
-    
-    // Mapeamos la URL de la carátula o dejamos la por defecto si viene vacía
-    const imagenUrl = juegoElegido.imagen_url ? juegoElegido.imagen_url : '../assets/img/no-image.png';
-    document.getElementById("reto-juego-imagen").src = imagenUrl;
+  // Vinculamos la ID que tu backend lee (id_videojuego)
+  document.getElementById("reto-juego-id").value = juegoElegido.id_videojuego;
+  document.getElementById("reto-juego-titulo").textContent =
+    juegoElegido.titulo;
 
-    // Encendemos el modal premium con la clase active
-    document.getElementById("modal-reto-destino").classList.add("active");
+  // Mapeamos la URL de la carátula o dejamos la por defecto si viene vacía
+  const imagenUrl = juegoElegido.imagen_url
+    ? juegoElegido.imagen_url
+    : "../assets/img/no-image.png";
+  document.getElementById("reto-juego-imagen").src = imagenUrl;
+
+  // Encendemos el modal premium con la clase active
+  document.getElementById("modal-reto-destino").classList.add("active");
 }
 
 // Se ejecuta si el jugador le da a "¡Aceptar Reto y Jugar!"
 function aceptarRetoDestino() {
-    const idVideojuego = document.getElementById("reto-juego-id").value;
-    
-    // Cerramos el modal de golpe
-    document.getElementById("modal-reto-destino").classList.remove("active");
+  const idVideojuego = document.getElementById("reto-juego-id").value;
 
-    // Conectamos de forma asíncrona con tu update_game.php
-    fetch("../app/update_game.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "id_videojuego=" + idVideojuego + "&accion=progreso",
-    })
+  // Cerramos el modal de golpe
+  document.getElementById("modal-reto-destino").classList.remove("active");
+
+  // Conectamos de forma asíncrona con tu update_game.php
+  fetch("../app/update_game.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "id_videojuego=" + idVideojuego + "&accion=progreso",
+  })
     .then((res) => res.json())
     .then((datos) => {
-        if (datos.status === "success") {
-            // Usamos la alerta premium global unificada de utils.js
-            lanzarNotificacionGamer("exito", "RETO ACEPTADO ⚔", "El juego se ha movido a tu Backlog Activo. ¡Redireccionando!");
-            
-            // Redirección suave al dashboard para ver el progreso colocado
-            setTimeout(() => {
-                window.location.href = "dashboard.php";
-            }, 1500);
-        } else {
-            lanzarNotificacionGamer("error", "Error", datos.message || "No se pudo actualizar el estado.");
-        }
+      if (datos.status === "success") {
+        // Usamos la alerta premium global unificada de utils.js
+        lanzarNotificacionGamer(
+          "exito",
+          "RETO ACEPTADO ⚔",
+          "El juego se ha movido a tu Backlog Activo. ¡Redireccionando!",
+        );
+
+        // Redirección suave al dashboard para ver el progreso colocado
+        setTimeout(() => {
+          window.location.href = "dashboard.php";
+        }, 1500);
+      } else {
+        lanzarNotificacionGamer(
+          "error",
+          "Error",
+          datos.message || "No se pudo actualizar el estado.",
+        );
+      }
     });
 }
 
 // Se ejecuta si el usuario rechaza la propuesta del destino para volver a probar
 function rechazarRetoDestino() {
-    document.getElementById("modal-reto-destino").classList.remove("active");
-    lanzarNotificacionGamer("exito", "DESTINO RECHAZADO 🎲", "Puedes volver a girar la ruleta cuando quieras.");
+  document.getElementById("modal-reto-destino").classList.remove("active");
+  lanzarNotificacionGamer(
+    "exito",
+    "DESTINO RECHAZADO 🎲",
+    "Puedes volver a girar la ruleta cuando quieras.",
+  );
 }

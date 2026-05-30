@@ -99,7 +99,7 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-  <section class="seccion-contrato-premium">
+    <section class="seccion-contrato-premium">
         <div class="contrato-header-flex">
             <div>
                 <h2 class="section-title-dash">Contratos Semanales 📜</h2>
@@ -155,10 +155,10 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
                     <p>No tienes juegos pendientes ni en curso. ¡Buen trabajo! 🔥</p>
                     <a href="buscar_juego.php">Añadir más juegos</a>
                 </div>
-            <?php else:
+                <?php else:
                 foreach ($juegos_activos as $juego):
                     // Minutos guardados -> Horas estimadas
-                    $minutos_jugados = $juego['horas_jugadas']; 
+                    $minutos_jugados = $juego['horas_jugadas'];
                     $horas_estimadas = ($juego['duracion_estimada_horas'] > 0) ? $juego['duracion_estimada_horas'] : 30;
 
                     $horas_jugadas_decimal = $minutos_jugados / 60;
@@ -170,7 +170,7 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
                     // Desglose limpio para el string visual
                     $solo_horas = floor($minutos_jugados / 60);
                     $solo_minutos = $minutos_jugados % 60;
-                    
+
                     $texto_tiempo_jugado = "";
                     if ($solo_horas > 0) {
                         $texto_tiempo_jugado .= $solo_horas . "h ";
@@ -206,8 +206,7 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 
                             <div class="card-actions-premium">
                                 <?php if ($juego['estado'] === 'pendiente'): ?>
-                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso')" class="btn-action-dash play" title="Empezar a jugar">▶ Jugar</button>
-                                <?php endif; ?>
+                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso', event)" class="btn-action-dash play" title="Empezar a jugar">▶ Jugar</button> <?php endif; ?>
 
                                 <?php if ($juego['estado'] === 'en_progreso'): ?>
                                     <button type="button" onclick="cambiarHoras(<?= $juego['id_videojuego'] ?>)" class="btn-action-dash edit" title="Actualizar progreso">📝 Horas</button>
@@ -225,21 +224,21 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 
     <section class="games-section-premium">
         <h2 class="section-title-dash">Últimas Joyas Completadas 🏆</h2>
-        <div class="games-grid-premium">
+        <div class="games-grid-premium" id="contenedor-joyas-completadas">
             <?php if (empty($juegos_completados)): ?>
                 <div class="empty-state-dash">
                     <p>Aún no has completado ningún juego. ¡Toca viciar! 🕹</p>
                 </div>
-            <?php else:
+                <?php else:
                 foreach ($juegos_completados as $juego):
-                    // 🚀 CORRECCIÓN SÓLIDA DE VARIABLES PARA JUEGOS COMPLETADOS
+                    // CORRECCIÓN SÓLIDA DE VARIABLES PARA JUEGOS COMPLETADOS
                     $minutos_totales_acumulados = intval($juego['horas_jugadas']);
                     $horas_estimadas_api = ($juego['duracion_estimada_horas'] > 0) ? intval($juego['duracion_estimada_horas']) : 30;
-                    
+
                     // Desglosamos de forma humana los minutos que el usuario invirtió de verdad
                     $final_horas = floor($minutos_totales_acumulados / 60);
                     $final_minutos = $minutos_totales_acumulados % 60;
-                    
+
                     $texto_tiempo_final = "";
                     if ($final_horas > 0) {
                         $texto_tiempo_final .= $final_horas . "h ";
@@ -328,10 +327,10 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
             <select id="contrato-juego" class="select-ruleta-perfil">
                 <?php if (empty($juegos_activos)): ?>
                     <option value="">-- No tienes juegos activos --</option>
-                <?php else:
+                    <?php else:
                     foreach ($juegos_activos as $ja): ?>
                         <option value="<?= $ja['id_videojuego'] ?>"><?= htmlspecialchars($ja['titulo']) ?> (<?= ucfirst($ja['estado']) ?>)</option>
-                    <?php endforeach;
+                <?php endforeach;
                 endif; ?>
             </select>
         </div>

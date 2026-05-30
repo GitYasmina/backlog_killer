@@ -36,7 +36,9 @@ function buscar() {
   spinner.style.display = "block";
   contenedor.innerHTML = `<div class="empty-state-buscador"><p>Consultando con RAWG...</p></div>`;
 
-  fetch(`https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(texto)}&page_size=6`)
+  fetch(
+    `https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(texto)}&page_size=6`,
+  )
     .then((res) => res.json())
     .then((datos) => {
       spinner.style.display = "none";
@@ -49,22 +51,30 @@ function buscar() {
         return;
       }
 
-      contenedor.innerHTML = ""; 
-
+      contenedor.innerHTML = "";
+      // obtenemos la lista de IDs de juegos que el usuario ya tiene en su biblioteca para marcar los que ya posee
       datos.results.forEach((juego) => {
         const generoAPI = juego.genres && juego.genres.length > 0 ? juego.genres[0].name : "Desconocido";
         const generoReal = traduccionGeneros[generoAPI] || generoAPI;
         const duracionReal = juego.playtime || 30;
         const tituloLimpio = juego.name.replace(/"/g, "&quot;");
         
-        const card = `
-        <div class="buscador-game-card">
-            <div class="buscador-poster-wrapper">
-                <img src="${juego.background_image || "../assets/img/no-image.png"}" alt="${tituloLimpio}">
-            </div>
-            <div class="buscador-info-box">
-                <h3>${tituloLimpio}</h3>
-                <span class="buscador-tag-genero">${generoReal}</span>
+        // convertimos la ID que viene de internet a número puro para buscarla en el array local
+        const idBuscada = Number(juego.id);
+        const yaLoTengo = misJuegosBiblioteca.includes(idBuscada);
+        
+        let botonAccionHTML = "";
+
+        if (yaLoTengo) {
+            // Caso A: El juego ya existe en estados_juego para este usuario
+            botonAccionHTML = `
+                <a href="dashboard.php" class="btn-add-buscador-premium ya-aniadido" style="text-decoration: none; text-align: center; display: block;">
+                    📦 En Biblioteca
+                </a>
+            `;
+        } else {
+            // Caso B: El juego no está en su biblioteca, ponemos tu botón morado original
+            botonAccionHTML = `
                 <button 
                     class="btn-add-buscador-premium"
                     data-id="${juego.id}"
@@ -75,6 +85,19 @@ function buscar() {
                     onclick="manejadorAñadir(this)">
                     ➕ Añadir a mi lista
                 </button>
+            `;
+        }
+        
+        // Renderizamos tu tarjeta con el botón condicional mapeado
+        const card = `
+        <div class="buscador-game-card">
+            <div class="buscador-poster-wrapper">
+                <img src="${juego.background_image || "../assets/img/no-image.png"}" alt="${tituloLimpio}">
+            </div>
+            <div class="buscador-info-box">
+                <h3>${tituloLimpio}</h3>
+                <span class="buscador-tag-genero">${generoReal}</span>
+                ${botonAccionHTML}
             </div>
         </div>
         `;
@@ -113,14 +136,26 @@ function añadir(idApi, titulo, imagen, genero, duracion) {
       if (datos.status === "success") {
         if (datos.logro) {
           // Lanza el aviso premium de Logro
-          lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+          lanzarNotificacionGamer(
+            "logro",
+            "¡LOGRO DESBLOQUEADO!",
+            `Has conseguido: ${datos.logro}`,
+          );
         } else {
           // Lanza el aviso premium de éxito normal
-          lanzarNotificacionGamer("exito", "Biblioteca Actualizada", `¡${titulo} se ha guardado correctamente!`);
+          lanzarNotificacionGamer(
+            "exito",
+            "Biblioteca Actualizada",
+            `¡${titulo} se ha guardado correctamente!`,
+          );
         }
       } else {
         // Lanza el aviso de error
-        lanzarNotificacionGamer("error", "Acción Cancelada", datos.message || "Este juego ya está en tu biblioteca.");
+        lanzarNotificacionGamer(
+          "error",
+          "Acción Cancelada",
+          datos.message || "Este juego ya está en tu biblioteca.",
+        );
       }
     });
 }
@@ -128,18 +163,18 @@ function añadir(idApi, titulo, imagen, genero, duracion) {
 let temporizadorDebounce;
 
 document.addEventListener("DOMContentLoaded", () => {
-    const inputBuscar = document.getElementById("game-search");
-    
-    if (inputBuscar) {
-        // En vez de llamar a buscar() a lo loco, controlamos el flujo
-        inputBuscar.addEventListener("keyup", () => {
-            // Borramos el temporizador anterior si el usuario sigue tecleando rápido
-            clearTimeout(temporizadorDebounce);
-            
-            // Creamos uno nuevo. Solo si pasa medio segundo sin teclear, se ejecuta la búsqueda
-            temporizadorDebounce = setTimeout(() => {
-                buscar();
-            }, 500); // 500 milisegundos de tregua para la API
-        });
-    }
+  const inputBuscar = document.getElementById("game-search");
+
+  if (inputBuscar) {
+    // En vez de llamar a buscar() a lo loco, controlamos el flujo
+    inputBuscar.addEventListener("keyup", () => {
+      // Borramos el temporizador anterior si el usuario sigue tecleando rápido
+      clearTimeout(temporizadorDebounce);
+
+      // Creamos uno nuevo. Solo si pasa medio segundo sin teclear, se ejecuta la búsqueda
+      temporizadorDebounce = setTimeout(() => {
+        buscar();
+      }, 500); // 500 milisegundos de tregua para la API
+    });
+  }
 });
