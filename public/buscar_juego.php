@@ -48,6 +48,6 @@ $array_js = !empty($mis_juegos_api_ids) ? json_encode(array_map('intval', $mis_j
     console.log("IDs de RAWG en mi biblioteca local:", misJuegosBiblioteca);
 </script>
 
-<script src="../assets/js/buscador.js"></script>
-<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/buscador.js" defer></script>
+<script src="../assets/js/utils.js" defer></script>
 <?php include '../views/footer.php'; ?>

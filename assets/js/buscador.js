@@ -18,7 +18,7 @@ const traduccionGeneros = {
   Arcade: "Arcade",
 };
 
-// se activa cada vez que escribimos en el buscador, pero con un sistema de debounce para no saturar la API
+// se activa cada vez que escribimos en el buscador, con debounce
 function buscar() {
   const texto = document.getElementById("game-search").value.trim();
   const contenedor = document.getElementById("search-results");
@@ -52,28 +52,25 @@ function buscar() {
       }
 
       contenedor.innerHTML = "";
-      // obtenemos la lista de IDs de juegos que el usuario ya tiene en su biblioteca para marcar los que ya posee
+      
       datos.results.forEach((juego) => {
         const generoAPI = juego.genres && juego.genres.length > 0 ? juego.genres[0].name : "Desconocido";
         const generoReal = traduccionGeneros[generoAPI] || generoAPI;
         const duracionReal = juego.playtime || 30;
         const tituloLimpio = juego.name.replace(/"/g, "&quot;");
         
-        // convertimos la ID que viene de internet a número puro para buscarla en el array local
         const idBuscada = Number(juego.id);
         const yaLoTengo = misJuegosBiblioteca.includes(idBuscada);
         
         let botonAccionHTML = "";
 
         if (yaLoTengo) {
-            // Caso A: El juego ya existe en estados_juego para este usuario
             botonAccionHTML = `
                 <a href="dashboard.php" class="btn-add-buscador-premium ya-aniadido" style="text-decoration: none; text-align: center; display: block;">
                     📦 En Biblioteca
                 </a>
             `;
         } else {
-            // Caso B: El juego no está en su biblioteca, ponemos tu botón morado original
             botonAccionHTML = `
                 <button 
                     class="btn-add-buscador-premium"
@@ -88,7 +85,6 @@ function buscar() {
             `;
         }
         
-        // Renderizamos tu tarjeta con el botón condicional mapeado
         const card = `
         <div class="buscador-game-card">
             <div class="buscador-poster-wrapper">
@@ -121,11 +117,11 @@ function manejadorAñadir(boton) {
   const genero = boton.getAttribute("data-genero");
   const duracion = boton.getAttribute("data-duracion");
 
-  añadir(idApi, titulo, imagen, genero, duracion);
+  añadir(idApi, titulo, imagen, genero, duracion, boton);
 }
 
-// Envío de datos asíncrono modificado sin un solo alert nativo
-function añadir(idApi, titulo, imagen, genero, duracion) {
+// 🚀 ÚNICA FUNCIÓN AÑADIR (Usando outerHTML para proteger el título y el género)
+function añadir(idApi, titulo, imagen, genero, duracion, botonElemento) {
   fetch("../app/add_game.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -134,47 +130,45 @@ function añadir(idApi, titulo, imagen, genero, duracion) {
     .then((res) => res.json())
     .then((datos) => {
       if (datos.status === "success") {
+        
+        // Mutamos estrictamente el botón por el enlace, sin tocar el contenedor padre
+        if (botonElemento) {
+          botonElemento.outerHTML = `
+            <a href="dashboard.php" class="btn-add-buscador-premium ya-aniadido" style="text-decoration: none; text-align: center; display: block;">
+                📦 En Biblioteca
+            </a>
+          `;
+          
+          if (typeof misJuegosBiblioteca !== 'undefined') {
+            misJuegosBiblioteca.push(Number(idApi));
+          }
+        }
+
         if (datos.logro) {
-          // Lanza el aviso premium de Logro
-          lanzarNotificacionGamer(
-            "logro",
-            "¡LOGRO DESBLOQUEADO!",
-            `Has conseguido: ${datos.logro}`,
-          );
+          lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
         } else {
-          // Lanza el aviso premium de éxito normal
-          lanzarNotificacionGamer(
-            "exito",
-            "Biblioteca Actualizada",
-            `¡${titulo} se ha guardado correctamente!`,
-          );
+          lanzarNotificacionGamer("exito", "Biblioteca Actualizada", `¡${titulo} se ha guardado correctamente!`);
         }
       } else {
-        // Lanza el aviso de error
-        lanzarNotificacionGamer(
-          "error",
-          "Acción Cancelada",
-          datos.message || "Este juego ya está en tu biblioteca.",
-        );
+        lanzarNotificacionGamer("error", "Acción Cancelada", datos.message || "Este juego ya está en tu biblioteca.");
       }
+    })
+    .catch((err) => {
+      console.error("Error al conectar con el servidor:", err);
     });
 }
 
 let temporizadorDebounce;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const inputBuscar = document.getElementById("game-search");
-
-  if (inputBuscar) {
-    // En vez de llamar a buscar() a lo loco, controlamos el flujo
-    inputBuscar.addEventListener("keyup", () => {
-      // Borramos el temporizador anterior si el usuario sigue tecleando rápido
-      clearTimeout(temporizadorDebounce);
-
-      // Creamos uno nuevo. Solo si pasa medio segundo sin teclear, se ejecuta la búsqueda
-      temporizadorDebounce = setTimeout(() => {
-        buscar();
-      }, 500); // 500 milisegundos de tregua para la API
-    });
-  }
+    const inputBuscar = document.getElementById("game-search");
+    
+    if (inputBuscar) {
+        inputBuscar.addEventListener("input", () => {
+            clearTimeout(temporizadorDebounce);
+            temporizadorDebounce = setTimeout(() => {
+                buscar();
+            }, 500);
+        });
+    }
 });
