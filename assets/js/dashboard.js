@@ -1,16 +1,53 @@
 // 1. CONTROL GENERAL DE ESTADOS DE JUEGO
 function actualizarJuego(idVideojuego, accion, evento) {
-  if (accion === "terminado") {
-    mostrarModalResena(idVideojuego);
-    return;
-  }
-
   const e = evento || window.event;
   let tarjetaJuego = null;
   if (e && e.currentTarget) {
     tarjetaJuego = e.currentTarget.closest(".game-card-premium");
   }
 
+  // controlamos el acceso al modal de finalización
+  if (accion === "terminado") {
+    if (tarjetaJuego) {
+      // 1. Recuperamos la duración estimada en horas desde el atributo del HTML
+      const horasEstimadas = parseInt(tarjetaJuego.getAttribute("data-duracion")) || 30;
+      const minutosEstimadosTotales = horasEstimadas * 60;
+
+      // 2. Buscamos los minutos acumulados analizando el contenedor de progreso en caliente
+      const textoProgreso = tarjetaJuego.querySelector(".progress-text-dash")?.textContent || "0min";
+
+      // Extraemos el número de minutos u horas usando expresiones regulares
+      let minutosJugados = 0;
+      const matchHoras = textoProgreso.match(/(\d+)h/);
+      const matchMinutos = textoProgreso.match(/(\d+)min/);
+
+      if (matchHoras) minutosJugados += parseInt(matchHoras[1]) * 60;
+      if (matchMinutos) minutosJugados += parseInt(matchMinutos[1]);
+
+      // 3. Evaluamos si el usuario cumple el límite (50% de la campaña obligatoria)
+      const porcentajeMinimoRequerido = 0.50; 
+      const minutosMinimos = minutosEstimadosTotales * porcentajeMinimoRequerido;
+
+      if (minutosJugados < minutosMinimos) {
+        const horasFaltantes = Math.ceil((minutosMinimos - minutosJugados) / 60);
+        lanzarNotificacionGamer(
+          "error",
+          "Ciclo Bloqueado 🔒",
+          `Debes registrar al menos el 50% de la campaña estimativa. ¡Añade unas ${horasFaltantes}h más de juego para desbloquear la reseña!`
+        );
+        return; // Frenamos en seco, el modal de estrellas JAMÁS se abrirá
+      }
+
+      // Recordamos la tarjeta global de forma limpia una única vez antes de lanzar el modal
+      tarjetaJuegoACompletar = tarjetaJuego;
+    }
+
+    // Si supera con éxito el candado de seguridad, abrimos la valoración limpia
+    mostrarModalResena(idVideojuego);
+    return;
+  }
+
+  // para el resto de acciones (mover a en progreso, eliminar, etc) ejecutamos la función normal sin bloqueos
   fetch("../app/update_game.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -20,37 +57,33 @@ function actualizarJuego(idVideojuego, accion, evento) {
     .then((datos) => {
       if (datos.status === "success") {
         if (tarjetaJuego) {
-          // animación elástica de movimiento
+          // Animación elástica de movimiento
           tarjetaJuego.classList.add("removiendo-contrato");
 
           setTimeout(() => {
             tarjetaJuego.classList.remove("removiendo-contrato");
-
-            // cambiamos el estado en el DOM para el filtro por pestañas
             tarjetaJuego.setAttribute("data-estado", "en_progreso");
 
-            // cambiamos el diseño del Badge visual arriba de la foto
             const badge = tarjetaJuego.querySelector(".status-badge-premium");
             if (badge) {
               badge.className = "status-badge-premium en_progreso";
               badge.textContent = "En progreso";
             }
 
-            // reemplazamos la botonera usando exactamente tus estilos y tu icono de basura de FontAwesome
             const contenedorBotones = tarjetaJuego.querySelector(".card-actions-premium");
             if (contenedorBotones) {
+              // Al pasar de pendiente a en_progreso, arranca con 0 horas, inyectamos el botón deshabilitado nativo
               contenedorBotones.innerHTML = `
                 <button type="button" onclick="cambiarHoras(${idVideojuego})" class="btn-action-dash edit" title="Actualizar progreso">📝 Horas</button>
-                <button type="button" onclick="actualizarJuego(${idVideojuego}, 'terminado', event)" class="btn-action-dash check" title="Marcar como terminado">✅ Fin</button>
+                <button type="button" class="btn-action-dash check btn-disabled-premium" title="🔒 Completa al menos el 50% de la campaña estimativa para desbloquear este ciclo" disabled>🔒 Fin</button>
                 <button type="button" onclick="confirmarEliminarJuego(${idVideojuego}, '${tarjetaJuego.querySelector("h3").textContent.replace(/'/g, "\\'")}')" class="btn-action-dash delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
               `;
             }
 
-            // inyectamos la barra de progreso en vivo vacía (0 horas de inicio)
             const infoBox = tarjetaJuego.querySelector(".game-info-premium");
             const tag = tarjetaJuego.querySelector(".game-tag-premium");
             if (infoBox && tag && !tarjetaJuego.querySelector(".progress-container-dash")) {
-              const duracionEstimada = tarjetaJuego.getAttribute("data-duracion") || 30; 
+              const duracionEstimada = tarjetaJuego.getAttribute("data-duracion") || 30;
               const barraHTML = `
                 <div class="progress-container-dash">
                     <div class="progress-bar-bg-dash">
@@ -62,10 +95,18 @@ function actualizarJuego(idVideojuego, accion, evento) {
               tag.insertAdjacentHTML("afterend", barraHTML);
             }
 
-            // movemos la tarjeta al final del contenedor para agruparla con los que están en progreso
             const contenedorGeneral = document.getElementById("contenedor-backlog-juegos");
             if (contenedorGeneral) {
               contenedorGeneral.appendChild(tarjetaJuego);
+            }
+
+            const selectContrato = document.getElementById("contrato-juego");
+            if (selectContrato) {
+              const opcionContrato = selectContrato.querySelector(`option[value="${idVideojuego}"]`);
+              if (opcionContrato) {
+                const tituloJuego = tarjetaJuego.querySelector("h3")?.textContent || "";
+                opcionContrato.textContent = `${tituloJuego} (En progreso)`;
+              }
             }
 
             comprobarBacklogVacio();
@@ -169,9 +210,6 @@ let tarjetaJuegoACompletar = null;
 
 // 3. CONTROL DEL MODAL DE VALORACIÓN Y RESEÑAS
 function mostrarModalResena(idVideojuego) {
-  if (event && event.currentTarget) {
-    tarjetaJuegoACompletar = event.currentTarget.closest(".game-card-premium");
-  }
   document.getElementById("modal-resena-juego-id").value = idVideojuego;
   document.getElementById("modal-comentario-input").value = "";
 
@@ -183,84 +221,46 @@ function mostrarModalResena(idVideojuego) {
 
 function cerrarModalResena() {
   document.getElementById("modal-resena").classList.remove("active");
-  location.reload();
 }
 
 function enviarResenaModal() {
-    const idVideojuego = document.getElementById("modal-resena-juego-id").value;
-    const comentario = document.getElementById("modal-comentario-input").value;
-    const estrellaSeleccionada = document.querySelector('input[name="puntuacion"]:checked');
-    const nota = estrellaSeleccionada ? estrellaSeleccionada.value : "5";
+  const idVideojuego = document.getElementById("modal-resena-juego-id").value;
+  const comentario = document.getElementById("modal-comentario-input").value;
+  const estrellaSeleccionada = document.querySelector('input[name="puntuacion"]:checked');
 
-    document.getElementById("modal-resena").classList.remove("active");
+  // Validación de estrellas obligatoria
+  if (!estrellaSeleccionada) {
+    lanzarNotificacionGamer("error", "Valoración Obligatoria", "Por favor, selecciona una puntuación en estrellas.");
+    return;
+  }
 
-    fetch("../app/update_game.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "id_videojuego=" + idVideojuego + "&accion=terminado&nota=" + nota + "&resena=" + encodeURIComponent(comentario),
+  const nota = estrellaSeleccionada.value;
+  document.getElementById("modal-resena").classList.remove("active");
+
+  fetch("../app/update_game.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "id_videojuego=" + idVideojuego + "&accion=terminado&nota=" + nota + "&resena=" + encodeURIComponent(comentario),
+  })
+    .then((res) => res.json())
+    .then((datos) => {
+      if (datos.status === "success") {
+        lanzarNotificacionGamer("exito", "¡Juego Completado!", "Tu reseña se ha guardado en el historial.");
+        
+        if (datos.logro) {
+          lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
+        }
+
+        // Actualizamos la tarjeta visualmente sin recargar, aplicando un efecto de brillo y luego desvaneciendo
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+
+      } else {
+        lanzarNotificacionGamer("error", "Error", datos.message || "No se pudo guardar.");
+      }
     })
-        .then((res) => res.json())
-        .then((datos) => {
-            if (datos.status === "success") {
-                if (tarjetaJuegoACompletar) {
-                    tarjetaJuegoACompletar.classList.add("removiendo-contrato");
-                    
-                    setTimeout(() => {
-                        const contenedorJoyas = document.getElementById("contenedor-joyas-completadas");
-                        const portada = tarjetaJuegoACompletar.querySelector(".game-poster-wrapper img")?.src || "../assets/img/no-image.png";
-                        const titulo = tarjetaJuegoACompletar.querySelector("h3")?.textContent || "Juego Terminado";
-                        const genero = tarjetaJuegoACompletar.querySelector(".game-tag-premium")?.textContent || "Gamer";
-
-                        // Si existe la rejilla de joyas abajo, inyectamos la versión completada en vivo
-                        if (contenedorJoyas) {
-                            const emptyStateJoyas = contenedorJoyas.querySelector(".empty-state-dash");
-                            if (emptyStateJoyas) emptyStateJoyas.remove();
-
-                            const nuevaJoyaHTML = `
-                                <div class="game-card-premium game-card-completed-premium">
-                                    <div class="game-poster-wrapper">
-                                        <img src="${portada}" alt="Portada">
-                                        <span class="status-badge-premium terminado">Terminado ✅</span>
-                                    </div>
-                                    <div class="game-info-premium">
-                                        <h3>${titulo}</h3>
-                                        <span class="game-tag-premium">${genero}</span>
-
-                                        <div class="progress-container-dash">
-                                            <div class="progress-bar-bg-dash">
-                                                <div class="progress-bar-fill-dash completed-bar" style="width: 100%;"></div>
-                                            </div>
-                                            <span class="progress-text-dash success-txt">¡Completado! (Nota: ★ ${nota}/5) 🌟</span>
-                                        </div>
-
-                                        <div class="card-actions-premium">
-                                            <button type="button" onclick="confirmarEliminarJuego(${idVideojuego}, '${titulo.replace(/'/g, "\\'")}')" class="btn-action-dash delete" title="Eliminar de la biblioteca"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            // Lo añade al inicio de la vitrina de completados
-                            contenedorJoyas.insertAdjacentHTML('afterbegin', nuevaJoyaHTML);
-                        }
-
-                        // Eliminamos la tarjeta del backlog superior
-                        tarjetaJuegoACompletar.remove();
-                        comprobarBacklogVacio();
-                    }, 400);
-                }
-
-                lanzarNotificacionGamer("exito", "¡Juego Completado!", "La reseña se ha guardado con éxito.");
-                
-                if (datos.logro) {
-                    lanzarNotificacionGamer("logro", "¡LOGRO DESBLOQUEADO!", `Has conseguido: ${datos.logro}`);
-                }
-            } else {
-                lanzarNotificacionGamer("error", "Error", datos.message || "Hubo un error al guardar la reseña");
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
+    .catch((error) => console.error("Error:", error));
 }
 
 // 4. CONTROL DEL MODAL DE CONTRATOS SEMANALES
@@ -425,6 +425,7 @@ function cerrarModalEliminar() {
     .classList.remove("active");
 }
 
+// función para ejecutar la eliminación del juego de forma asíncrona sin recargar la página
 function ejecutarEliminarJuego() {
   const idJuego = document.getElementById("eliminar-juego-id").value;
   cerrarModalEliminar();
@@ -437,17 +438,44 @@ function ejecutarEliminarJuego() {
     .then((res) => res.json())
     .then((datos) => {
       if (datos.status === "success") {
+        // desvanecemos y eliminamos la tarjeta del backlog visualmente
         if (tarjetaJuegoAEliminar) {
           tarjetaJuegoAEliminar.classList.add("removiendo-contrato");
           setTimeout(() => {
             tarjetaJuegoAEliminar.remove();
-            comprobarListaVaciaContratos();
+            comprobarBacklogVacio();
           }, 400);
         }
+
+        // buscamos y quitamos este juego del desplegable de los contratos semanales
+        try {
+          const selectContrato = document.getElementById("contrato-juego");
+          if (selectContrato) {
+            for (let i = 0; i < selectContrato.options.length; i++) {
+              if (selectContrato.options[i].value == idJuego) {
+                selectContrato.remove(i);
+                console.log(
+                  "Juego eliminado del select de contratos en caliente.",
+                );
+                break;
+              }
+            }
+
+            // si tras borrar la opción el select se ha quedado completamente vacío
+            if (selectContrato.options.length === 0) {
+              selectContrato.innerHTML = `
+                <option value="" disabled selected>❌ No tienes juegos activos disponibles</option>
+              `;
+            }
+          }
+        } catch (errOption) {
+          console.error("Aviso al limpiar select de contratos:", errOption);
+        }
+
         lanzarNotificacionGamer(
           "exito",
           "Juego Eliminado",
-          "Se ha quitado el juego de tu biblioteca.",
+          "Se ha quitado el juego de tu biblioteca y se han actualizado tus opciones.",
         );
       } else {
         lanzarNotificacionGamer(
@@ -455,10 +483,15 @@ function ejecutarEliminarJuego() {
           "Error",
           datos.message || "Error al eliminar",
         );
-        setTimeout(() => {
-          location.reload();
-        }, 550);
       }
+    })
+    .catch((err) => {
+      console.error("Error crítico en la petición de borrado:", err);
+      lanzarNotificacionGamer(
+        "error",
+        "Error Crítico",
+        "No se pudo interpretar la respuesta del servidor.",
+      );
     });
 }
 
@@ -468,21 +501,50 @@ function filtrarBacklog(estadoFiltro, botonActivo) {
   botones.forEach((btn) => btn.classList.remove("active"));
   botonActivo.classList.add("active");
 
+  const contenedor = document.getElementById("contenedor-backlog-juegos");
   const tarjetas = document.querySelectorAll(
     "#contenedor-backlog-juegos .game-card-premium",
   );
+
+  // limpiamos avisos de filtros vacíos previos para que no se dupliquen
+  const avisoPrevio = document.getElementById("aviso-filtro-vacio");
+  if (avisoPrevio) avisoPrevio.remove();
+
+  let tarjetasVisibles = 0;
 
   tarjetas.forEach((tarjeta) => {
     const estadoTarjeta = tarjeta.getAttribute("data-estado");
 
     if (estadoFiltro === "todos") {
       tarjeta.style.display = "flex";
+      tarjetasVisibles++;
     } else if (estadoTarjeta === estadoFiltro) {
       tarjeta.style.display = "flex";
+      tarjetasVisibles++;
     } else {
       tarjeta.style.display = "none";
     }
   });
+
+  // si tras aplicar el filtro no hay ninguna tarjeta visible, mostramos un mensaje
+  if (tarjetas.length > 0 && tarjetasVisibles === 0) {
+    let mensajeVacio = "No tienes juegos en esta categoría.";
+    if (estadoFiltro === "pendiente") {
+      mensajeVacio =
+        "¡Felicidades! No te quedan misiones pendientes en tu backlog. 🔥";
+    } else if (estadoFiltro === "en_progreso") {
+      mensajeVacio =
+        "No estás jugando a nada activamente. ¡Gira la ruleta o dale a Jugar! 🎲";
+    }
+
+    const divAviso = document.createElement("div");
+    divAviso.id = "aviso-filtro-vacio";
+    divAviso.className = "empty-state-dash";
+    divAviso.style.gridColumn = "1 / -1"; // Ocupa todo el ancho del mosaico grid
+    divAviso.innerHTML = `<p>${mensajeVacio}</p>`;
+
+    if (contenedor) contenedor.appendChild(divAviso);
+  }
 }
 
 function comprobarListaVaciaContratos() {
@@ -523,5 +585,27 @@ function cerrarModalLogout() {
   const modal = document.getElementById("modal-logout-confirmar");
   if (modal) {
     modal.classList.remove("active");
+  }
+}
+
+// ==========================================================================
+//  INTERFACES COMPLEMENTARIAS: Desplegar críticas guardadas
+// ==========================================================================
+function toggleResenaTarjeta(boton) {
+  // Buscamos la tarjeta contenedora
+  const tarjeta = boton.closest(".game-card-premium");
+  if (tarjeta) {
+    const panelResena = tarjeta.querySelector(".resena-desplegable-premium");
+    if (panelResena) {
+      // Alternamos la clase activa para disparar la transición CSS
+      panelResena.classList.toggle("active");
+      
+      // Cambiamos el texto del botón dinámicamente para mejorar el feedback
+      if (panelResena.classList.contains("active")) {
+        boton.innerHTML = "🙈 Ocultar";
+      } else {
+        boton.innerHTML = "👁 Reseña";
+      }
+    }
   }
 }

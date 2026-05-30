@@ -38,7 +38,7 @@ $juegos_activos = $stmt_activos->fetchAll();
 
 // 2. CONSULTA PARA JUEGOS COMPLETADOS (Solo Terminados)
 $stmt_completados = $conexion->prepare("
-    SELECT v.titulo, v.imagen_url, v.genero, ej.estado, ej.id_videojuego, ej.horas_jugadas, v.duracion_estimada_horas
+    SELECT v.titulo, v.imagen_url, v.genero, ej.estado, ej.id_videojuego, ej.horas_jugadas, v.duracion_estimada_horas, ej.nota, ej.resena
     FROM estados_juego ej
     JOIN videojuegos v ON ej.id_videojuego = v.id
     WHERE ej.id_usuario = ? AND ej.estado = 'terminado'
@@ -179,7 +179,7 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
                         $texto_tiempo_jugado .= $solo_minutos . "min";
                     }
                 ?>
-                    <div class="game-card-premium" data-estado="<?= htmlspecialchars($juego['estado']) ?>">
+                    <div class="game-card-premium" data-estado="<?= htmlspecialchars($juego['estado']) ?>" data-duracion="<?= $horas_estimadas ?>">
                         <div class="game-poster-wrapper">
                             <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
                             <span class="status-badge-premium <?= $juego['estado'] ?>"><?= ucfirst(str_replace('_', ' ', $juego['estado'])) ?></span>
@@ -206,11 +206,24 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 
                             <div class="card-actions-premium">
                                 <?php if ($juego['estado'] === 'pendiente'): ?>
-                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso', event)" class="btn-action-dash play" title="Empezar a jugar">▶ Jugar</button> <?php endif; ?>
+                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'progreso', event)" class="btn-action-dash play" title="Empezar a jugar">▶ Jugar</button> 
+                                <?php endif; ?>
 
-                                <?php if ($juego['estado'] === 'en_progreso'): ?>
+                                <?php if ($juego['estado'] === 'en_progreso'): 
+                                    // lógica de desbloqueo del botón de marcar como terminado: solo se habilita si el usuario ha jugado al menos el 50% de las horas estimadas para evitar trampas y fomentar el progreso real
+                                    $minutos_actuales = (int)$juego['horas_jugadas'];
+                                    $minutos_totales_estimados = $horas_estimadas * 60;
+                                    
+                                    // calculamos si el botón de marcar como terminado se desbloquea o no
+                                    $esta_desbloqueado = ($minutos_actuales >= ($minutos_totales_estimados * 0.50));
+                                ?>
                                     <button type="button" onclick="cambiarHoras(<?= $juego['id_videojuego'] ?>)" class="btn-action-dash edit" title="Actualizar progreso">📝 Horas</button>
-                                    <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado')" class="btn-action-dash check" title="Marcar como terminado">✅ Fin</button>
+                                    
+                                    <?php if ($esta_desbloqueado): ?>
+                                        <button type="button" onclick="actualizarJuego(<?= $juego['id_videojuego'] ?>, 'terminado', event)" class="btn-action-dash check" title="Marcar como terminado">✅ Fin</button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn-action-dash check btn-disabled-premium" title="🔒 Completa al menos el 50% de la campaña estimativa para desbloquear este ciclo" disabled>🔒 Fin</button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
 
                                 <button type="button" onclick="confirmarEliminarJuego(<?= $juego['id_videojuego'] ?>, '<?= addslashes($juego['titulo']) ?>')" class="btn-action-dash delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
@@ -225,51 +238,67 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
     <section class="games-section-premium">
         <h2 class="section-title-dash">Últimas Joyas Completadas 🏆</h2>
         <div class="games-grid-premium" id="contenedor-joyas-completadas">
-            <?php if (empty($juegos_completados)): ?>
-                <div class="empty-state-dash">
-                    <p>Aún no has completado ningún juego. ¡Toca viciar! 🕹</p>
-                </div>
-                <?php else:
-                foreach ($juegos_completados as $juego):
-                    // CORRECCIÓN SÓLIDA DE VARIABLES PARA JUEGOS COMPLETADOS
-                    $minutos_totales_acumulados = intval($juego['horas_jugadas']);
-                    $horas_estimadas_api = ($juego['duracion_estimada_horas'] > 0) ? intval($juego['duracion_estimada_horas']) : 30;
+        <?php if (empty($juegos_completados)): ?>
+            <div class="empty-state-dash">
+                <p>Aún no has coronado ninguna joya gamer este ciclo. ¡Suma horas y completa tu primer contrato! 🏆</p>
+            </div>
+        <?php else: ?>
+            <?php foreach ($juegos_completados as $juego): 
+                // 1. Extraemos las valoraciones reales
+                $nota_real = isset($juego['nota']) ? (int)$juego['nota'] : 0;
+                $resena_real = !empty($juego['resena']) ? htmlspecialchars($juego['resena']) : 'No has dejado ningún comentario escrito para este juego.';
+                
+                // 🚀 2. CÁLCULO GEEK DE TIEMPO REAL INVERTIDO
+                $minutos_totales_bd = (int)$juego['horas_jugadas'];
+                $horas_calculadas = floor($minutos_totales_bd / 60);
+                $minutos_restantes = $minutos_totales_bd % 60;
 
-                    // Desglosamos de forma humana los minutos que el usuario invirtió de verdad
-                    $final_horas = floor($minutos_totales_acumulados / 60);
-                    $final_minutos = $minutos_totales_acumulados % 60;
+                // Formateamos la cadena de texto de forma limpia
+                $texto_tiempo_real = "";
+                if ($horas_calculadas > 0) {
+                    $texto_tiempo_real .= $horas_calculadas . "h ";
+                }
+                $texto_tiempo_real .= $minutos_restantes . "min";
+            ?>
+                <div class="game-card-premium game-card-completed-premium">
+                    <div class="game-poster-wrapper">
+                        <img src="<?= htmlspecialchars($juego['imagen_url'] ?: '../assets/img/no-image.png') ?>" alt="Portada">
+                        <span class="status-badge-premium terminado">Terminado ✅</span>
+                    </div>
+                    <div class="game-info-premium">
+                        <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
+                        <span class="game-tag-premium"><?= htmlspecialchars($juego['genero']) ?></span>
 
-                    $texto_tiempo_final = "";
-                    if ($final_horas > 0) {
-                        $texto_tiempo_final .= $final_horas . "h ";
-                    }
-                    if ($final_minutos > 0 || $final_horas == 0) {
-                        $texto_tiempo_final .= $final_minutos . "min";
-                    }
-                ?>
-                    <div class="game-card-premium game-card-completed-premium">
-                        <div class="game-poster-wrapper">
-                            <img src="<?= (!empty($juego['imagen_url'])) ? $juego['imagen_url'] : '../assets/img/no-image.png' ?>" alt="Portada">
-                            <span class="status-badge-premium terminado">Terminado ✅</span>
+                        <div class="progress-container-dash">
+                            <div class="progress-bar-bg-dash">
+                                <div class="progress-bar-fill-dash completed-bar" style="width: 100%;"></div>
+                            </div>
+                            <span class="progress-text-dash success-txt">
+                                ⏱️ <?= $texto_tiempo_real ?> invertido en esta joya.
+                            </span>
                         </div>
-                        <div class="game-info-premium">
-                            <h3><?= htmlspecialchars($juego['titulo']) ?></h3>
-                            <span class="game-tag-premium"><?= htmlspecialchars($juego['genero']) ?></span>
 
-                            <div class="progress-container-dash">
-                                <div class="progress-bar-bg-dash">
-                                    <div class="progress-bar-fill-dash completed-bar" style="width: 100%;"></div>
-                                </div>
-                                <span class="progress-text-dash success-txt">¡Completado en <?= $texto_tiempo_final ?>! 🌟</span>
+                        <div class="card-actions-premium">
+                            <button type="button" onclick="toggleResenaTarjeta(this)" class="btn-action-dash edit" title="Ver mi reseña">👁 Reseña</button>
+                            <button type="button" onclick="confirmarEliminarJuego(<?= $juego['id_videojuego'] ?>, '<?= addslashes($juego['titulo']) ?>')" class="btn-action-dash delete" title="Eliminar de la biblioteca"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        
+                        <div class="resena-desplegable-premium">
+                            <div class="resena-stars-eval">
+                                <?php if ($nota_real > 0): ?>
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <span class="star-icon-review <?= $i <= $nota_real ? 'active' : '' ?>">★</span>
+                                    <?php endfor; ?>
+                                <?php else: ?>
+                                    <span style="color: #6e7681; font-size: 0.85rem;">Sin valoración en estrellas.</span>
+                                <?php endif; ?>
                             </div>
-
-                            <div class="card-actions-premium">
-                                <button type="button" onclick="confirmarEliminarJuego(<?= $juego['id_videojuego'] ?>, '<?= addslashes($juego['titulo']) ?>')" class="btn-action-dash delete" title="Eliminar de la biblioteca"><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                            <p class="resena-body-text">"<?= $resena_real ?>"</p>
                         </div>
                     </div>
-            <?php endforeach;
-            endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
         </div>
     </section>
 </main>
