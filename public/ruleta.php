@@ -81,12 +81,12 @@ sort($generos_existentes);
         </div>
     </div>
 
-    <div class="ruleta-panel-visual">
+   <div class="ruleta-panel-visual">
         <?php if (!empty($pendientes)): ?>
-            <div class="ruleta-wrapper">
-                <div class="ruleta-puntero"></div>
-                <div id="disco-ruleta" class="ruleta-disco"></div>
-                <div class="ruleta-centro"></div>
+            <div class="ruleta-wrapper" style="position: relative; display: inline-block; margin: 0 auto;">
+                <div class="ruleta-puntero" style="z-index: 10;"></div>
+                
+                <canvas id="canvas-ruleta" width="450" height="450"></canvas>
             </div>
         <?php endif; ?>
     </div>
