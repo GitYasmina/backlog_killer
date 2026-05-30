@@ -27,7 +27,11 @@ if ($porcentaje_xp > 100) {
 
         <div class="perfil-banner-top">
             <div class="perfil-avatar-preview">
-                <img src="../assets/img/avatars/<?= htmlspecialchars($u['avatar']) ?>" alt="Avatar Actual">
+                <?php 
+                    // determinamos qué imagen cargar: si existe un avatar real en la BD lo usamos, si no, cargamos el por defecto
+                    $avatar_renderizado = (!empty($u['avatar'])) ? htmlspecialchars($u['avatar']) : 'default.png'; 
+                ?>
+                <img src="../assets/img/avatars/<?= $avatar_renderizado ?>" alt="Avatar Actual">
             </div>
             <div class="perfil-user-info-top">
                 <h2 class="perfil-titulo-username">¡Hola, <?= htmlspecialchars($u['username']) ?>!</h2>
@@ -62,7 +66,7 @@ if ($porcentaje_xp > 100) {
 
                 <div class="avatar-selector-grid">
                     <?php
-                    $avatares = ['gojoAvatar.png', 'luffyAvatar.png', 'narutoAvatar.png', 'sukunaAvatar.png'];
+                    $avatares = ['gojoAvatar.png', 'anyaAvatar.png', 'girlAvatar.png', 'sukunaAvatar.png'];
                     foreach ($avatares as $icon):
                         $es_seleccionado = ($datos['avatar'] == $icon);
                     ?>
