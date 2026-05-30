@@ -16,8 +16,10 @@ $u = $stmt->fetch();
 $datos = $_SESSION['perfil_temp'] ?? $u;
 unset($_SESSION['perfil_temp']);
 
-// calculamos el porcentaje de la barra de experiencia (máximo de 100 XP por nivel)
-$porcentaje_xp = (($u['xp'] ?? 0) / 100) * 100;
+$xp_maxima_nivel = 100 + (($u['nivel'] - 1) * 50);
+
+// calculamos el porcentaje basándonos en el tope dinámico real
+$porcentaje_xp = (($u['xp'] ?? 0) / $xp_maxima_nivel) * 100;
 if ($porcentaje_xp > 100) {
     $porcentaje_xp = 100;
 }
@@ -43,7 +45,7 @@ if ($porcentaje_xp > 100) {
                         <div class="barra-xp-bg">
                             <div class="barra-xp-fill" style="width: <?= $porcentaje_xp ?>%;"></div>
                         </div>
-                        <span class="texto-xp"><?= $u['xp'] ?? 0 ?> / 100 XP para el siguiente nivel</span>
+                        <span class="texto-xp"><?= $u['xp'] ?? 0 ?> / <?= $xp_maxima_nivel ?> XP para el siguiente nivel</span>
                     </div>
                 </div>
             </div>

@@ -8,8 +8,6 @@ function procesarCheckinDiario($conexion, $id_usuario)
         'xp_ganada' => 20
     ];
 
-    $xp_para_subir = 100; // cada 100 puntos de XP se sube de nivel
-
     // consultamos los datos actuales del usuario
     $stmt = $conexion->prepare("SELECT xp, nivel, ultimo_checkin FROM usuarios WHERE id = ?");
     $stmt->execute([$id_usuario]);
@@ -18,6 +16,7 @@ function procesarCheckinDiario($conexion, $id_usuario)
     if (!$usuario) {
         return $resultado;
     }
+    $xp_para_subir = 100 + (($usuario['nivel'] - 1) * 50); // fórmula para aumentar el XP necesario por nivel
 
     $fecha_hoy = date('Y-m-d');
 
