@@ -20,20 +20,42 @@
             <nav class="nav-menu">
                 <ul>
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <li><a href="dashboard.php">Biblioteca</a></li>
-                        <li><a href="buscar_juego.php">Buscar</a></li>
-                        <li><a href="ruleta.php">Ruleta</a></li>
-                        <li><a href="perfil.php">Mi Perfil</a></li>
-                        <li><a href="logros.php">Mis Logros</a></li>
+                        <li>
+                            <a href="buscar_juego.php">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="dashboard.php">
+                                <i class="fa-solid fa-layer-group"></i> Biblioteca
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ruleta.php">
+                                <i class="fa-solid fa-dice"></i> Ruleta
+                            </a>
+                        </li>
+                        <li>
+                            <a href="perfil.php">
+                                <i class="fa-solid fa-user"></i> Mi Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="logros.php">
+                                <i class="fa-solid fa-trophy"></i> Mis Logros
+                            </a>
+                        </li>
+
                         <li>
                             <a href="javascript:void(0);" onclick="confirmarCerrarSesion()" class="btn-logout-premium" title="Cerrar Sesión">
                                 <i class="fa-solid fa-right-from-bracket"></i>
                             </a>
                         </li>
                     <?php else: ?>
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="login.php">Login</a></li>
-                        <li><a href="registro.php">Registro</a></li>
+                        <li><a href="index.php"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                        <li><a href="login.php"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                        <li><a href="registro.php"><i class="fa-solid fa-user-plus"></i> Registro</a></li>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -52,3 +74,4 @@
             </div>
         </div>
     </div>
+
