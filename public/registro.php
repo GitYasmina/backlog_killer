@@ -48,7 +48,13 @@ unset($_SESSION['registro_datos']);
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" name="password" id="password" autocomplete="new-password" required placeholder="••••••••">
+                <div class="password-wrapper-premium">
+                    <input type="password" name="password" id="password" autocomplete="new-password" required placeholder="••••••••">
+                    <button type="button" class="btn-toggle-eye" onclick="toggleVisibilidadPassword('password', 'eye-icon-1')">
+                        <i class="fa-solid fa-eye" id="eye-icon-1"></i>
+                    </button>
+                </div>
+                
                 <div class="password-strength-wrapper">
                     <div id="strength-bar"></div>
                 </div>
@@ -57,7 +63,12 @@ unset($_SESSION['registro_datos']);
 
             <div class="form-group">
                 <label for="confirm_password">Confirmar Contraseña</label>
-                <input type="password" name="confirm_password" id="confirm_password" autocomplete="new-password" required placeholder="Repite tu contraseña">
+                <div class="password-wrapper-premium">
+                    <input type="password" name="password" id="confirm_password" autocomplete="new-password" required placeholder="Repite tu contraseña">
+                    <button type="button" class="btn-toggle-eye" onclick="toggleVisibilidadPassword('confirm_password', 'eye-icon-2')">
+                        <i class="fa-solid fa-eye" id="eye-icon-2"></i>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn-cta">REGISTRARME</button>
@@ -66,8 +77,8 @@ unset($_SESSION['registro_datos']);
         <p class="auth-footer">
             ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
         </p>
-
     </div>
 </main>
+<script src="../assets/js/utils.js"></script>
 <script src="../assets/js/validaciones.js"></script>
 <?php include '../views/footer.php'; ?>

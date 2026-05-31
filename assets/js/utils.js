@@ -76,3 +76,21 @@ function mostrarModalResena(idVideojuego) {
 function cerrarModalResena() {
   document.getElementById("modal-resena").classList.remove("active");
 }
+
+// modal para ver la contraseña al escribirla
+function toggleVisibilidadPassword(inputId, iconoId) {
+  const input = document.getElementById(inputId);
+  const icono = document.getElementById(iconoId);
+
+  if (input && icono) {
+    if (input.type === "password") {
+      input.type = "text";
+      icono.classList.remove("fa-eye");
+      icono.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icono.classList.remove("fa-eye-slash");
+      icono.classList.add("fa-eye");
+    }
+  }
+}
