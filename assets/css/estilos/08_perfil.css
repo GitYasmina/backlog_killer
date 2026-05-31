@@ -1,0 +1,532 @@
+/* ==========================================================================
+   MÓDULO: REDISEÑO COMPLETO PERFIL GAMER HORIZONTAL (Anti-Columna Rígida)
+   ========================================================================== */
+/* 1. DISEÑO DE BANNER/CABECERA SUPERIOR HORIZONTAL */
+/* Distribución de la barra de nivel a lo ancho */
+/* 2. FORMULARIO EN DOS BLOQUES PARALELOS INFERIORES */
+/* Cuadrícula de Selección de Avatares (Mosaico de 2x2) */
+/* Panel Derecho de Datos */
+/* Pone Gamer Tag y Email en paralelo para romper la verticalidad */
+/* Contenedor que pone los dos botones en paralelo (uno al lado del otro) */
+/* El botón morado premium adaptado para compartir fila */
+/* El enlace de cerrar sesión transformado en botón sólido rojo a juego */
+/* Responsive para pantallas compactas */
+@media (max-width: 850px) {
+    .perfil-banner-top {
+        flex-direction: column;
+        text-align: center;
+    }
+    .perfil-gamificado-horizontal {
+        flex-direction: column;
+    }
+    .perfil-form-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .campos-datos-row {
+        flex-direction: column;
+        gap: 24px;
+    }
+    .perfil-botones-footer {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+/* --- 19. LAYOUT DE PERFIL --- */
+.perfil-layout-grid {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+.perfil-col-izquierda {
+    flex: 1;
+    min-width: 360px;
+}
+.perfil-col-derecha {
+    flex: 1.5;
+}
+.vitrina-subtitle {
+    color: #8e8e93;
+    font-size: 0.95rem;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+.select-ruleta-perfil {
+    width: 100%;
+    background: #161b22;
+    border: 1px solid var(--borde);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+}
+.logros-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.logro-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--borde);
+    background: rgba(22, 27, 34, 0.2);
+}
+.logro-desbloqueado {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.5) 0%, rgba(28, 17, 44, 0.5) 100%);
+    border-color: #8a2be2; 
+}
+.logro-bloqueado {
+    opacity: 0.3;
+}
+.logro-icono {
+    font-size: 1.8rem;
+    background: #0b0e14;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    min-width: 45px;
+    text-align: center;
+}
+.logro-texto h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+    color: #fff;
+}
+.logro-texto p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.fecha-logro {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #a333ff;
+    margin-top: 5px;
+}
+@media (max-width: 850px) {
+    .perfil-layout-grid {
+        flex-direction: column;
+    }
+    .perfil-col-izquierda, .perfil-col-derecha {
+        width: 100%;
+    }
+}
+/* --- 20. COMPONENTE: BARRA DE NIVELES --- */
+.perfil-gamificado-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--fondo-tarjeta);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--borde);
+    margin-bottom: 25px;
+}
+.badge-nivel {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+.xp-info-container {
+    flex: 1;
+}
+.xp-info-container h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #ffffff;
+}
+.barra-xp-bg {
+    background-color: #0b0e14;
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 1px solid var(--borde);
+}
+.barra-xp-fill {
+    background-color: #00c6ff;
+    height: 100%;
+    transition: width 0.5s ease;
+}
+.texto-xp {
+    font-size: 0.8rem;
+    color: #8e8e93;
+    display: block;
+    margin-top: 5px;
+}
+/* ==========================================================================
+  MODULO PERFIL HORIZONTAL CON SUBIDA DE ARCHIVOS
+   ========================================================================== */
+.perfil-layout-moderno {
+    max-width: 1050px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+/* 1. Cabecera Horizontal Superior */
+.perfil-banner-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 35px;
+    background: linear-gradient(90deg, rgba(22, 27, 34, 0.4) 0%, rgba(11, 14, 20, 0) 100%);
+    padding: 30px;
+    border-radius: 16px;
+    border-left: 4px solid var(--morado-principal);
+}
+.perfil-avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--morado-principal);
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    flex-shrink: 0;
+}
+.perfil-avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.perfil-user-info-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.perfil-titulo-username {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--texto-blanco);
+    margin: 0;
+}
+.perfil-fecha-alta {
+    color: var(--texto-gris);
+    font-size: 0.95rem;
+    margin: 4px 0 15px 0;
+}
+.perfil-gamificado-horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+}
+.xp-progress-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+/* 2. Distribución en dos bloques principales */
+.perfil-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 40px;
+    align-items: start;
+}
+.label-section-title {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--texto-blanco);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--borde);
+    padding-bottom: 8px;
+}
+/* Solución definitiva a los avatares rotos */
+.avatar-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    background: rgba(22, 27, 34, 0.2);
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--borde);
+}
+.avatar-option-item input[type="radio"] {
+    display: none !important; /* Escondemos los radios antiguos */
+}
+.avatar-option-item img {
+    width: 100%;
+    max-width: 65px;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    opacity: 0.35;
+    margin: 0 auto;
+    display: block;
+    transition: all 0.25s ease;
+}
+.avatar-option-item img:hover { opacity: 0.8; }
+.avatar-option-item input[type="radio"]:checked + img {
+    opacity: 1;
+    border-color: var(--morado-principal);
+    box-shadow: 0 0 14px rgba(124, 58, 237, 0.5);
+    transform: scale(1.05);
+}
+/* CAJA INTEGRADA DE SUBIDA DE FOTO CUSTOM */
+.perfil-upload-custom-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(22, 27, 34, 0.4);
+    border: 1px solid var(--borde);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+}
+.upload-custom-txt {
+    color: var(--texto-blanco);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+#file-upload-input {
+    display: none !important; /* Oculta el diseño gris nativo del navegador */
+}
+.btn-upload-file-trigger {
+    display: inline-block;
+    background: rgba(124, 58, 237, 0.1);
+    color: var(--morado-hover);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-upload-file-trigger:hover {
+    background: var(--morado-principal);
+    color: white;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+}
+.upload-status-empty {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--texto-gris);
+}
+.upload-status-ready {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #10b981; 
+    font-weight: 600;
+}
+/* Botonera Horizontal en la columna izquierda */
+.perfil-wrapper-botones-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+.btn-cta-perfil {
+    flex: 1;
+    background-color: var(--morado-principal);
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+.btn-cta-perfil:hover {
+    background-color: var(--morado-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+}
+.logout-link-action {
+    flex: 1;
+    color: #ffffff;
+    background-color: #f43f5e;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+.logout-link-action:hover {
+    background-color: #fb7185;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.35);
+}
+/* Bloque derecho */
+.perfil-bloque-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.campos-datos-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.campos-datos-row .form-group-perfil { flex: 1; }
+.form-group-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form-group-perfil label {
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.input-perfil-dark,
+.select-perfil-dark {
+    background: #11141a !important;
+    border: 1px solid var(--borde) !important;
+    padding: 14px !important;
+    border-radius: 8px !important;
+    color: var(--texto-blanco) !important;
+    font-size: 0.95rem !important;
+    outline: none;
+    width: 100%;
+}
+.input-perfil-dark:focus,
+.select-perfil-dark:focus {
+    border-color: var(--morado-principal) !important;
+}
+.select-perfil-dark {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 15px) center !important;
+}
+@media (max-width: 850px) {
+    .perfil-banner-top { flex-direction: column; text-align: center; }
+    .perfil-gamificado-horizontal { flex-direction: column; }
+    .perfil-form-grid { grid-template-columns: 1fr; gap: 30px; }
+    .campos-datos-row { flex-direction: column; gap: 24px; }
+    .perfil-wrapper-botones-horizontal { flex-direction: column; }
+}
+/* ==========================================================================
+   MÓDULO: VITRINA DE LOGROS HORIZONTAL EXPANDIDA (Anti-Tarjeta)
+   ========================================================================== */
+/* Layout general abierto alineado con la estética del perfil moderno */
+.logros-layout-moderno {
+    max-width: 1050px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+/* Cabecera integrada de la página de lado a lado */
+.logros-page-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--texto-blanco);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+.vitrina-subtitle-premium {
+    color: var(--texto-gris);
+    font-size: 1.05rem;
+}
+.logros-contador-destacado {
+    color: var(--morado-brillante);
+    font-weight: 700;
+}
+/* LA REJILLA: Distribuye los logros en horizontal de forma fluida */
+.logros-grid-expandido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+/* Tarjetas individuales integradas sin fondos opacos compactos */
+.logro-card-premium {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--borde);
+    background: rgba(22, 27, 34, 0.2);
+    transition: all 0.3s ease;
+}
+/* Estilo premium con degradado neón para medallas obtenidas */
+.logro-desbloqueado-premium {
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.4) 0%, rgba(33, 19, 56, 0.25) 100%);
+    border-color: rgba(163, 51, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(163, 51, 255, 0.03);
+}
+.logro-desbloqueado-premium:hover {
+    transform: translateY(-3px);
+    border-color: var(--morado-principal);
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.6) 0%, rgba(43, 23, 74, 0.35) 100%);
+    box-shadow: 0 8px 25px rgba(163, 51, 255, 0.12);
+}
+/* Estilo apagado semitransparente para medallas bloqueadas */
+.logro-bloqueado-premium {
+    opacity: 0.35;
+    background: rgba(22, 27, 34, 0.1);
+}
+/* El bloque interno para el icono o candado */
+.logro-icono-box {
+    font-size: 1.7rem;
+    background: #0b0e14;
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    border-radius: 10px;
+    border: 1px solid var(--borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+/* Textos informativos de cada logro */
+.logro-info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.logro-info-box h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--texto-blanco);
+}
+.logro-info-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--texto-gris);
+    line-height: 1.4;
+}
+.fecha-logro-premium {
+    font-size: 0.75rem;
+    color: var(--morado-hover);
+    font-weight: 600;
+    margin-top: 2px;
+}

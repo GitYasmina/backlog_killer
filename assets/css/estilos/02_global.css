@@ -1,0 +1,21 @@
+/* --- 2. RESET Y BASES --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+main {
+    flex: 1; 
+}
+body {
+    background-color: var(--fondo-oscuro);
+    color: var(--texto-blanco);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    
+    /* flexbox en vertical para controlar la pantalla completa */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Fuerza al body a ocupar siempre el 100% de la altura de la ventana */
+}

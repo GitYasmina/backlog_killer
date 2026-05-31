@@ -1,0 +1,131 @@
+/* --- 3. HEADER (Efecto cristal translúcido moderno) --- */
+.main-header {
+    background-color: rgba(11, 14, 20, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--borde);
+    padding: 1.2rem 5%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.logo a {
+    color: var(--texto-blanco);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.logo a::first-letter {
+    color: var(--morado-principal);
+}
+.nav-menu a {
+    color: var(--texto-gris);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.nav-menu a:hover {
+    color: var(--texto-blanco);
+}
+/* --- 15. NAVIGATION NAVBAR --- */
+.main-navbar {
+    background: rgba(17, 17, 17, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--borde);
+    padding: 15px 0;
+}
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+.nav-logo {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+.nav-links a {
+    color: #aaaaaa;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+.nav-links a:hover {
+    color: #a333ff; 
+}
+
+/* ==========================================================================
+   ALINEACIÓN EXACTA DE LA BARRA DE NAVEGACIÓN
+   ========================================================================== */
+/* El contenedor de todos tus enlaces */
+.barra-navegacion-principal {
+    display: flex;
+    align-items: center; /* alinea los textos y el icono al mismo nivel central */
+    justify-content: flex-end; /* O space-between, según cómo tengas el diseño */
+    gap: 24px; /* Espacio uniforme entre cada opción del menú */
+}
+/* Forzamos que todos los enlaces compartan la misma base de altura */
+.barra-navegacion-principal a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    height: 100%;
+}
+/* ==========================================================================
+   ALINEACIÓN EXACTA DE LA BARRA DE NAVEGACIÓN (ESTRUCTURA UL/LI)
+   ========================================================================== */
+/* Estilización premium del icono de apagado */
+.btn-logout-premium:hover {
+    background: rgba(244, 63, 94, 0.1); /* Brillo sutil al pasar por encima */
+    transform: scale(1.08);
+}
+/* ========================================================
+   CORRECCIÓN DEL MENÚ HEADER (Navbar Horizontal)
+   ======================================================== */
+.nav-menu ul {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 25px; /* Separación elegante entre los botones */
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+}
+.nav-menu ul li {
+    display: inline-block;
+}
+/* Alineación perfecta entre el icono y el texto */
+.nav-menu ul li a {
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+    text-decoration: none;
+    color: #e4e4e7; /* Gris claro para que resalte en tu fondo oscuro */
+    font-weight: bold;
+    font-size: 1rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+/* Efecto gamer al pasar el ratón por encima */
+.nav-menu ul li a:hover {
+    color: #a855f7; 
+    transform: translateY(-2px); /* Pequeño saltito */
+}
+
+.btn-logout-premium {
+    color: #f43f5e !important; /* Rojo para salir */
+}

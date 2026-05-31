@@ -1,0 +1,12 @@
+/* --- 1. VARIABLES GLOBALES --- */
+:root {
+    --fondo-oscuro: #0b0e14;
+    --fondo-tarjeta: rgba(22, 27, 34, 0.5); /* Suavizado con opacidad para integrarse con el fondo */
+    --morado-principal: #7c3aed;
+    --morado-hover: #9061f9;
+    --morado-brillante: #a333ff;
+    --texto-blanco: #ffffff;
+    --texto-gris: #9ca3af;
+    --borde: #21262d; 
+    --blanco: #ffffff;
+}

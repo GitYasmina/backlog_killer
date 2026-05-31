@@ -1,0 +1,644 @@
+/* --- 13. DASHBOARD --- */
+.dashboard-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.dashboard-header h1 {
+    color: var(--blanco);
+    margin-bottom: 20px;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.stat-card {
+    background: rgba(163, 51, 255, 0.04);
+    border: 1px solid rgba(163, 51, 255, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--morado-brillante);
+}
+.stat-label {
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+}
+.dashboard-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+.btn-secondary {
+    background: transparent;
+    border: 2px solid var(--morado-brillante);
+    color: var(--blanco);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-secondary:hover {
+    background: var(--morado-brillante);
+    box-shadow: 0 0 15px var(--morado-brillante);
+}
+.search-bar-container {
+    position: relative;
+    margin: 20px 0;
+}
+#game-search {
+    width: 100%;
+    padding: 15px;
+    background: #161b22;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+}
+#game-search:focus {
+    border-color: var(--morado-brillante);
+    outline: none;
+}
+.game-poster {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+.btn-add {
+    background: var(--morado-brillante);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+.btn-add:hover { opacity: 0.9; }
+.game-poster-dash {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+    display: block;
+}
+/* --- 16. BOTONES DE ACCIÓN --- */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-start;
+}
+.card-actions button {
+    background: #161b22;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+.card-actions .btn-action-play:hover {
+    background: #2b1f3d;
+    border-color: #a333ff; 
+}
+.card-actions .btn-action-check:hover {
+    background: #193222;
+    border-color: #2ecc71; 
+}
+.card-actions .btn-action-delete:hover {
+    background: #3a1c1c;
+    border-color: #e74c3c; 
+}
+/* ==========================================================================
+    ESTILO PREMIUM: DASHBOARD PRINCIPAL DE JUEGOS
+   ========================================================================== */
+.dashboard-layout-moderno {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+}
+/* 1. Cabecera superior y botones de acción unificados */
+.dashboard-header-premium {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.header-titulo-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-titulo-wrapper h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--texto-blanco);
+    letter-spacing: -0.5px;
+}
+.dashboard-actions-btns {
+    display: flex;
+    gap: 12px;
+}
+.btn-cta-dash-primary,
+.btn-cta-dash-secondary {
+    padding: 11px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    display: inline-block;
+}
+.btn-cta-dash-primary {
+    background-color: var(--morado-principal);
+    color: white;
+    border: none;
+}
+.btn-cta-dash-primary:hover {
+    background-color: var(--morado-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 18px rgba(124, 58, 237, 0.35);
+}
+.btn-cta-dash-secondary {
+    background: transparent;
+    border: 2px solid var(--morado-brillante);
+    color: white;
+}
+.btn-cta-dash-secondary:hover {
+    background: var(--morado-brillante);
+    box-shadow: 0 0 15px rgba(163, 51, 255, 0.4);
+    transform: translateY(-2px);
+}
+/* Marcadores Superiores Neón */
+.stats-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.stat-card-premium {
+    background: rgba(22, 27, 34, 0.4);
+    border: 1px solid var(--borde);
+    padding: 24px;
+    border-radius: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.stat-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+}
+.stat-total::before { background: var(--morado-principal); }
+.stat-pendiente::before { background: #f59e0b; }
+.stat-progreso::before { background: #00c6ff; }
+.stat-value-premium {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--texto-blanco);
+    margin-bottom: 4px;
+}
+.stat-label-premium {
+    color: var(--texto-gris);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+/* 2. Sección del Contrato Semanal Abierto */
+.contrato-vacio-card-premium {
+    background-color: rgba(22, 27, 34, 0.15);
+    border: 2px dashed var(--borde);
+    border-radius: 12px;
+    padding: 35px;
+    text-align: center;
+    color: var(--texto-gris);
+}
+.btn-firmar-contrato {
+    margin-top: 15px;
+}
+.tarjeta-contrato-gamer-premium {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.6) 0%, rgba(11, 14, 20, 0.8) 100%);
+    border: 1px solid rgba(0, 198, 255, 0.25);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 198, 255, 0.05);
+    width: 100%;
+}
+.contrato-img-wrapper {
+    width: 65px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--borde);
+}
+.contrato-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.contrato-cuerpo-premium {
+    flex: 1;
+}
+.contrato-tag-juego-premium {
+    background-color: #0b0e14;
+    color: #00c6ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid rgba(0, 198, 255, 0.15);
+}
+.tarjeta-contrato-gamer-premium h3 {
+    margin: 12px 0 6px 0;
+    font-size: 1.25rem;
+    color: var(--texto-blanco);
+}
+.contrato-recompensa-premium span {
+    color: #10b981;
+    font-weight: 700;
+}
+.contrato-fecha-premium {
+    color: var(--texto-gris);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+.contrato-acciones-premium {
+    display: flex;
+    gap: 10px;
+}
+/* 3. Cabecera Flex con Pestañas de Filtrado Dinámico */
+.games-section-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--borde);
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+.games-section-header-flex .section-title-dash {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.section-title-dash {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--texto-blanco);
+}
+.dashboard-filter-tabs {
+    display: flex;
+    background-color: #11141a;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+}
+.filter-tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--texto-gris);
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-tab-btn:hover {
+    color: var(--texto-blanco);
+}
+.filter-tab-btn.active {
+    background-color: var(--morado-principal);
+    color: var(--texto-blanco);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+}
+/* 4. La Rejilla de Juegos en Mosaico Adaptativo */
+.games-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 25px;
+    width: 100%;
+}
+.game-card-premium {
+    background: rgba(22, 27, 34, 0.3);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: row; /* Coloca la carátula al lado de los datos de forma simétrica */
+    overflow: hidden;
+    transition: transform 0.4s ease, opacity 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease !important;
+    overflow: hidden;
+}
+.game-card-premium:hover {
+    transform: translateY(-4px);
+    border-color: var(--morado-principal);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+}
+.game-poster-wrapper {
+    width: 110px;
+    position: relative;
+    flex-shrink: 0;
+    aspect-ratio: 2 / 3; /* Forzamos proporciones verticales reales de carátula */
+}
+.game-poster-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.status-badge-premium {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    color: white;
+}
+.status-badge-premium.pendiente { background: #f59e0b; }
+.status-badge-premium.en_progreso { background: #00c6ff; }
+.status-badge-premium.terminado { background: #10b981; }
+.game-info-premium {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.game-info-premium h3 {
+    font-size: 1.05rem;
+    color: var(--texto-blanco);
+    margin: 0 0 6px 0;
+    
+    /*Activamos el motor multi-línea inteligente de Webkit */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Número máximo de líneas permitidas antes de cortar */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal; /* Anula el nowrap anterior para permitir el salto de línea */
+    
+    /* Añadimos una altura mínima para que las tarjetas vacías mantengan la misma simetría */
+    min-height: 2.2rem; 
+    line-height: 1.15;
+}
+.game-tag-premium {
+    font-size: 0.8rem;
+    color: var(--texto-gris);
+    background: #11141a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    align-self: flex-start;
+}
+/* Barras de Progreso Internas */
+.progress-container-dash {
+    margin: 10px 0;
+}
+.progress-bar-bg-dash {
+    background-color: #0b0e14;
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+}
+.progress-bar-fill-dash {
+    background-color: #00c6ff;
+    height: 100%;
+}
+.completed-bar {
+    background-color: #10b981 !important;
+}
+.progress-text-dash {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--texto-gris);
+    margin-top: 5px;
+}
+.success-txt { color: #10b981; font-weight: 600; }
+/* EFECTO MODO COMPLETACIONISTA PULSANTE */
+.barra-completacionista-pulsante {
+    background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%) !important;
+    animation: pulso-dorado-neon 1.5s infinite alternate ease-in-out;
+}
+.txt-modo-completacionista {
+    color: #f1c40f;
+    font-weight: 700;
+}
+@keyframes pulso-dorado-neon {
+    0% { box-shadow: 0 0 3px rgba(241, 196, 15, 0.2); opacity: 0.9; }
+    100% { box-shadow: 0 0 12px rgba(241, 196, 15, 0.5); opacity: 1; }
+}
+/* Botoneras internas de acciones */
+.card-actions-premium {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.btn-action-dash {
+    background: #161b22;
+    border: 1px solid var(--borde);
+    color: var(--texto-blanco);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.btn-action-dash.play:hover { background: #2b1f3d; border-color: var(--morado-brillante); color: var(--morado-hover); }
+.btn-action-dash.edit:hover { background: #132d3e; border-color: #00c6ff; }
+.btn-action-dash.check:hover { background: #143520; border-color: #10b981; }
+.btn-action-dash.delete:hover { background: #3c1a1a; border-color: #f43f5e; color: #fb7185; }
+.game-card-completed-premium {
+    border-color: rgba(16, 185, 129, 0.2);
+}
+.empty-state-dash {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: rgba(22, 27, 34, 0.1);
+    border: 1px dashed var(--borde);
+    border-radius: 12px;
+    color: var(--texto-gris);
+}
+.empty-state-dash a {
+    color: var(--morado-hover);
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 10px;
+    display: inline-block;
+}
+/* Toasts de Check-in */
+.notificacion-toast {
+    background: #11141a;
+    border-left: 4px solid #10b981;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.contenido-toast {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.texto-toast h4 { margin: 0; color: white; font-size: 1rem; }
+.texto-toast p { margin: 4px 0 0 0; color: var(--texto-gris); font-size: 0.85rem; }
+.boton-cerrar-toast { background: transparent; border: none; color: var(--texto-gris); cursor: pointer; margin-left: auto; font-size: 1rem; }
+
+/* Responsive adaptativo */
+@media (max-width: 850px) {
+    .header-titulo-wrapper { flex-direction: column; gap: 15px; align-items: flex-start; }
+    .stats-grid-premium { grid-template-columns: 1fr; }
+    .tarjeta-contrato-gamer-premium { flex-direction: column; text-align: center; }
+    .games-section-header-flex { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .dashboard-filter-tabs { width: 100%; justify-content: space-between; }
+    .filter-tab-btn { flex: 1; text-align: center; }
+}
+/* ==========================================================================
+   AJUSTE DE MÁRGENES: CABECERA DE CONTRATOS SEMANALES
+   ========================================================================== */
+.contrato-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    width: 100%;
+}
+.btn-firmar-flotante {
+    padding: 10px 20px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700;
+    border-radius: 8px;
+    height: fit-content;
+    white-space: nowrap;
+    transition: all 0.2s ease-in-out;
+}
+.contratos-grid-wrapper-premium {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Espacio limpio entre misiones */
+    width: 100%;
+    margin-bottom: 30px;
+}
+/* Aseguramos que la tarjeta maneje transiciones de animaciones */
+.contratos-grid-wrapper-premium .tarjeta-contrato-gamer-premium {
+    margin: 0 !important;
+    background: rgba(22, 27, 34, 0.25);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    transition: transform 0.4s ease, opacity 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+    overflow: hidden;
+    max-height: 200px; /* Un tope estimado para la animación de colapso */
+}
+/* animación que se activa al completar o borrar */
+.tarjeta-contrato-gamer-premium.removiendo-contrato {
+    opacity: 0 !important;
+    transform: translateX(-50px) scale(0.95); /* Se desliza a la izquierda y se encoge */
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-color: transparent !important;
+}
+/* ==========================================================================
+   ESTILO PREMIUM: BOTÓN JUEGO YA ADQUIRIDO EN EL BUSCADOR
+   ========================================================================== */
+.btn-add-buscador-premium.ya-aniadido {
+    background: rgba(33, 38, 45, 0.5) !important; 
+    color: #9ca3af !important;
+    border: 1px solid #30363d !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+.btn-add-buscador-premium.ya-aniadido:hover {
+    background: rgba(124, 58, 237, 0.1) !important; 
+    color: #ffffff !important;
+    border-color: #7c3aed !important;
+}
+/* ==========================================================================
+   INTERFAZ PREMIUM: BOTÓN DE TERMINAR JUEGO DESHABILITADO 
+   ========================================================================== */
+.btn-action-dash.check.btn-disabled-premium {
+    background: rgba(33, 38, 45, 0.4) !important; 
+    color: #6e7681 !important;                   
+    border: 1px solid #30363d !important;
+    cursor: not-allowed !important;               /* Cursor con símbolo de bloqueo */
+    opacity: 0.6;
+    transform: none !important;                    /* Eliminamos el escalado elástico */
+    box-shadow: none !important;
+}
+/* ==========================================================================
+   DESPLEGABLE DE RESEÑAS EN JUEGOS COMPLETADOS
+   ========================================================================== */
+.resena-desplegable-premium {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+    background: rgba(22, 27, 34, 0.6);
+    border-radius: 6px;
+    margin-top: 0;
+    padding: 0 10px;
+    border: 1px solid transparent;
+}
+/* Clase activa que inyectará JS al pulsar el ojo */
+.resena-desplegable-premium.active {
+    max-height: 200px; /* Altura máxima permitida antes de hacer scroll interno */
+    margin-top: 12px;
+    padding: 12px;
+    border-color: #30363d;
+    overflow-y: auto;
+}
+.resena-stars-eval {
+    color: #6e7681;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 2px;
+}
+.star-icon-review.active {
+    color: #f59e0b !important; /* Dorado premium para tus estrellas asignadas */
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+.resena-body-text {
+    font-style: italic;
+    color: #c9d1d9;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    word-break: break-word;
+}

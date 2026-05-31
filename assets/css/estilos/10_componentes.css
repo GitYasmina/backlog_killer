@@ -1,0 +1,666 @@
+/* --- 17. COMPONENTE: BARRAS DE PROGRESO --- */
+.progress-container {
+    margin-top: 12px;
+    width: 100%;
+}
+.progress-container .progress-bar-bg {
+    background-color: #0b0e14;
+    border-radius: 4px;
+    height: 6px;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+}
+.progress-container .progress-bar-fill {
+    background-color: #a333ff;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.progress-container .progress-text {
+    display: block;
+    font-size: 0.75rem;
+    color: #8e8e93;
+    margin-top: 4px;
+    font-weight: 500;
+}
+/* --- 18. MODALES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 7, 10, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out !important;
+}
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-content {
+    background: #0b0e14;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.modal-content h3 {
+    margin-top: 0;
+    color: #fff;
+}
+.modal-content p {
+    color: #8e8e93;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+.modal-input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+.modal-input-group input {
+    background: #161b22;
+    border: 1px solid var(--borde);
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    width: 80px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+.modal-actions button {
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+    transition: background 0.2s;
+}
+.btn-modal-cancel {
+    background: #222;
+    color: #fff;
+}
+.btn-modal-cancel:hover { background: #333; }
+.btn-modal-save {
+    background: #a333ff; 
+    color: #fff;
+}
+.btn-modal-save:hover { background: #b555ff; }
+.game-card-completed {
+    opacity: 0.85;
+    border-color: #2ecc71 !important; 
+}
+/* --- 21. COMPONENTE: RESEÑAS --- */
+.modal-input-group-textarea {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-top: 15px;
+    text-align: left;
+}
+.modal-input-group-textarea label {
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+.modal-input-group-textarea textarea {
+    background-color: #161b22;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 10px;
+    color: #ffffff;
+    font-family: inherit;
+    resize: none;
+}
+.modal-input-group-textarea textarea:focus {
+    border-color: #00c6ff;
+    outline: none;
+}
+.selector-estrellas {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 5px;
+    margin: 20px 0;
+    font-size: 2.5rem;
+}
+.selector-estrellas input {
+    display: none;
+}
+.selector-estrellas label {
+    color: #333333;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.selector-estrellas label:hover,
+.selector-estrellas label:hover ~ label,
+.selector-estrellas input:checked ~ label {
+    color: #f1c40f;
+}
+/* --- 22. COMPONENTE: CONTRATO SEMANAL --- */
+.seccion-contrato {
+    margin: 30px 0;
+}
+.contrato-subtitulo {
+    color: #8e8e93;
+    font-size: 0.9rem;
+    margin: -10px 0 20px 0;
+}
+.contrato-vacio-card {
+    background-color: var(--fondo-tarjeta);
+    border: 2px dashed var(--borde);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    color: #aaaaaa;
+}
+.tarjeta-contrato-gamer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.4) 0%, rgba(11, 14, 20, 0.6) 100%);
+    border: 2px solid #00c6ff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.1);
+}
+.contrato-poster {
+    width: 70px;
+    height: 95px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--borde);
+}
+.contrato-cuerpo {
+    flex: 1;
+}
+.contrato-tag-juego {
+    background-color: #0b0e14;
+    color: #00c6ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid var(--borde);
+}
+.tarjeta-contrato-gamer h3 {
+    margin: 10px 0 5px 0;
+    color: #ffffff;
+    font-size: 1.2rem;
+}
+.contrato-recompensa {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2ecc71;
+}
+.contrato-fecha {
+    margin: 5px 0 0 0;
+    font-size: 0.8rem;
+    color: #8e8e93;
+}
+.contrato-acciones {
+    display: flex;
+    gap: 10px;
+}
+.modal-input-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    margin-bottom: 15px;
+    width: 100%;
+}
+.modal-input-group-vertical label {
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+.modal-input-group-vertical input {
+    background-color: #161b22;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 12px;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+.modal-input-group-vertical input:focus {
+    border-color: #00c6ff;
+    outline: none;
+}
+/* ==========================================================================
+   MÓDULO: FOOTER PREMIUM CORPORATIVO (Look Gaming Oscuro)
+   ========================================================================== */
+.site-footer {
+    background-color: rgba(11, 14, 20, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--borde);
+    padding: 60px 0 20px 0;
+    margin-top: 80px; /* Separación respecto al contenido superior */
+    width: 100%;
+}
+.footer-container {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+}
+/* Columna 1: Branding */
+.footer-logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--texto-blanco);
+    letter-spacing: -0.5px;
+    margin-bottom: 15px;
+}
+.footer-logo span {
+    color: var(--morado-principal);
+}
+.footer-description {
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 320px;
+}
+/* Encabezados del footer */
+.site-footer h4 {
+    color: var(--texto-blanco);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+/* Columna 2: Enlaces */
+.footer-links-section ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.footer-links-section a {
+    color: var(--texto-gris);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+.footer-links-section a:hover {
+    color: var(--morado-hover);
+}
+/* Columna 3: Configuración de Iconos de Redes Reales */
+.footer-author {
+    color: var(--texto-gris);
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+.footer-social-links {
+    display: flex;
+    gap: 16px;
+}
+/* Diseño base circular para los botones de las redes */
+.social-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #11141a;
+    border: 1px solid var(--borde);
+    color: var(--texto-gris);
+    font-size: 1.3rem; /* Tamaño óptimo para el logo interno */
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Efectos Hover personalizados e individuales */
+.github-btn:hover {
+    color: #ffffff;
+    border-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+.linkedin-btn:hover {
+    color: #0a66c2; /* Azul oficial de LinkedIn */
+    border-color: #0a66c2;
+    background-color: rgba(10, 102, 194, 0.08);
+    box-shadow: 0 0 15px rgba(10, 102, 194, 0.3);
+    transform: translateY(-3px);
+}
+/* Barra inferior de Copyright */
+.footer-bottom-bar {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 20px 20px 0 20px;
+    border-top: 1px solid var(--borde);
+    text-align: center;
+}
+.footer-bottom-bar p {
+    color: #4b5563;
+    font-size: 0.8rem;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+    .footer-description {
+        margin: 0 auto;
+    }
+    .footer-social-links {
+        justify-content: center;
+    }
+}
+/* ==========================================================================
+   COMPONENTES: NOTIFICACIONES TOAST DINÁMICAS (Anti-Alerts nativos)
+   ========================================================================== */
+.toast-dinamico-premium {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background-color: #11141a;
+    border: 1px solid var(--borde);
+    padding: 16px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999; /* Siempre flotando por encima de todo */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 380px;
+    animation: deslizarToastPremium 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+/* Colores de borde y neón personalizados según el tipo de aviso */
+.toast-dinamico-premium.exito { border-left: 4px solid #10b981; }
+.toast-dinamico-premium.logro { border-left: 4px solid #f1c40f; box-shadow: 0 0 20px rgba(241, 196, 15, 0.15); }
+.toast-dinamico-premium.error { border-left: 4px solid #f43f5e; }
+.toast-icono-box-dinamico {
+    font-size: 1.3rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+/* Colores de icono rápidos */
+.exito .toast-icono-box-dinamico { color: #10b981; }
+.logro .toast-icono-box-dinamico { color: #f1c40f; }
+.error .toast-icono-box-dinamico { color: #f43f5e; }
+.toast-texto-box-dinamico h4 {
+    margin: 0;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.toast-texto-box-dinamico p {
+    margin: 3px 0 0 0;
+    color: var(--texto-gris);
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+/* ANIMACIONES DE ENTRADA Y SALIDA */
+@keyframes deslizarToastPremium {
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+@keyframes desvanecerToastPremium {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(30px);
+        opacity: 0;
+    }
+}
+/* ==========================================================================
+   ACTUALIZACIÓN: MODAL DE ELIMINACIÓN PREMIUM (Look Zona de Peligro)
+   ========================================================================== */
+.modal-danger-premium {
+    border-top: 4px solid #f43f5e !important; /* Línea superior roja de peligro */
+    box-shadow: 0 0 30px rgba(244, 63, 94, 0.15) !important;
+    text-align: center;
+}
+.modal-danger-icon {
+    font-size: 2.5rem;
+    color: #f43f5e;
+    margin-bottom: 10px;
+    animation: parpadeoAlertaGamer 1.5s infinite alternate ease-in-out;
+}
+.modal-danger-premium h3 {
+    font-size: 1.4rem;
+    color: white;
+    margin-bottom: 10px;
+}
+.modal-danger-premium p {
+    color: var(--texto-gris);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+.modal-danger-premium strong {
+    color: #f43f5e;
+    font-weight: 700;
+}
+/* Botón rojo de ejecución destructiva */
+.btn-modal-danger-execute {
+    background-color: #f43f5e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-modal-danger-execute:hover {
+    background-color: #e11d48;
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+    transform: translateY(-1px);
+}
+@keyframes parpadeoAlertaGamer {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.08); opacity: 1; }
+}
+/* ========================================================
+   MODAL DE REGISTRO DE HORAS PREMIUM (Diseño Neón Morado)
+   ======================================================== */
+/* Contenedor principal con el resplandor */
+.modal-horas-premium {
+    background-color: #121214 !important; /* Fondo ultra oscuro */
+    border: 2px solid #a855f7 !important; /* Borde morado neón */
+    border-radius: 16px !important;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.25) !important; /* Resplandor exterior */
+    padding: 30px !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    color: #ffffff;
+}
+/* Flexbox para alinear Horas y Minutos */
+.modal-inputs-doble {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.modal-inputs-doble .input-group-half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.modal-inputs-doble label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #f4f4f5;
+}
+/* Estilo de los campos de texto oscuros */
+.modal-inputs-doble input {
+    background-color: #1e1e24; /* Fondo gris oscuro */
+    border: 1px solid #3f3f46;
+    color: #ffffff;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+/* Efecto al hacer clic en el input */
+.modal-inputs-doble input:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+/* Contenedor de botones en vertical */
+.modal-actions-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+/* Botón principal (Guardar) */
+.btn-modal-save-purple {
+    background: linear-gradient(90deg, #9333ea, #a855f7);
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-modal-save-purple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+/* Botón secundario (Cancelar) */
+.btn-modal-cancel-dark {
+    background-color: #27272a;
+    color: #a1a1aa;
+    border: 1px solid #3f3f46;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-modal-cancel-dark:hover {
+    background-color: #3f3f46;
+    color: #ffffff;
+}
+/* ========================================================
+   MODAL DE CHECK-IN DIARIO 
+   ======================================================== */
+.modal-checkin-premium {
+    background-color: #121214 !important;
+    border: 2px solid #f59e0b !important; 
+    border-radius: 20px !important;
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.25) !important;
+    padding: 40px 30px !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+/* Efecto de luz radial en el fondo del modal */
+.checkin-glow-bg {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(245,158,11,0.3) 0%, rgba(18,18,20,0) 70%);
+    z-index: 0;
+}
+/* Contenedor del icono flotante */
+.checkin-icon-wrapper {
+    position: relative;
+    z-index: 1;
+    font-size: 4rem;
+    margin-bottom: 15px;
+    animation: flotarIcono 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.6));
+}
+.checkin-title {
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.checkin-desc {
+    position: relative;
+    z-index: 1;
+    color: #a1a1aa;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+.checkin-desc strong {
+    color: #fcd34d; 
+    font-size: 1.1rem;
+}
+/* Botón de reclamar recompensa */
+.btn-checkin-claim {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(90deg, #f59e0b, #ef4444); /* Degradado de fuego */
+    color: #ffffff;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: latidoBoton 2s infinite;
+}
+.btn-checkin-claim:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    animation: none; /* Paramos el latido al pasar el ratón */
+}
+/* Animaciones */
+@keyframes flotarIcono {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+@keyframes latidoBoton {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
