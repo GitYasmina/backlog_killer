@@ -83,7 +83,7 @@ function actualizarPorcionesYFiltros() {
     ctx.fillStyle = "#8b949e";
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("No quedan misiones con estos filtros 🎈", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("No hay juegos con estos filtros 🎈", canvas.width / 2, canvas.height / 2);
     return;
   }
 

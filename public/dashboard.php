@@ -62,14 +62,20 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 <main class="dashboard-container dashboard-layout-moderno">
 
     <?php if ($datos_checkin['mostrar_aviso']): ?>
-        <div class="notificacion-toast" id="alerta-checkin">
-            <div class="contenido-toast">
-                <span class="icono-toast">🎯</span>
-                <div class="texto-toast">
-                    <h4>¡Foco Diario Activado!</h4>
-                    <p>Has recibido <strong>+<?= $datos_checkin['xp_ganada'] ?> XP</strong> por volver a la carga contra tu backlog.</p>
+        <div id="modal-checkin" class="modal-overlay active" style="display: flex; z-index: 9999; backdrop-filter: blur(5px);">
+            <div class="modal-content modal-checkin-premium">
+                <div class="checkin-glow-bg"></div>
+                
+                <div class="checkin-icon-wrapper">
+                    <span class="checkin-icon">🔥</span>
                 </div>
-                <button class="boton-cerrar-toast" onclick="document.getElementById('alerta-checkin').style.display='none'">✕</button>
+                
+                <h2 class="checkin-title">¡Foco Diario!</h2>
+                <p class="checkin-desc">Has vuelto a la carga contra tu backlog. <br>¡Recibes <strong>+<?= $datos_checkin['xp_ganada'] ?> XP</strong> por mantener el ritmo y no rendirte!</p>
+                
+                <div class="checkin-actions">
+                    <button onclick="document.getElementById('modal-checkin').style.display='none'" class="btn-checkin-claim">¡Reclamar Recompensa!</button>
+                </div>
             </div>
         </div>
     <?php endif; ?>
@@ -304,17 +310,26 @@ $contratos_activos = $stmt_contrato->fetchAll(PDO::FETCH_ASSOC);
 </main>
 
 <div id="modal-horas" class="modal-overlay">
-    <div class="modal-content">
-        <h3>Registrar Sesión de Juego 🎮</h3>
-        <p>¿Cuántos minutos has estado jugando en esta sesión? Se sumarán a tu progreso actual.</p>
+    <div class="modal-content modal-horas-premium">
+        <h3 style="text-align: center; margin-bottom: 5px;">⏱️ Registrar Progreso</h3>
+        <p style="text-align: center; color: #a1a1aa; font-size: 0.9rem; margin-bottom: 25px;">¿Cuánto tiempo has jugado en esta sesión?</p>
+        
         <input type="hidden" id="modal-juego-id">
-        <div class="modal-input-group">
-            <input type="number" id="modal-horas-input" min="1" placeholder="Ej. 10, 30, 60" autofocus>
-            <span>minutos</span>
+        
+        <div class="modal-inputs-doble">
+            <div class="input-group-half">
+                <label for="modal-horas-input">Horas</label>
+                <input type="number" id="modal-horas-input" min="0" placeholder="0">
+            </div>
+            <div class="input-group-half">
+                <label for="modal-minutos-input">Minutos</label>
+                <input type="number" id="modal-minutos-input" min="0" max="59" placeholder="0">
+            </div>
         </div>
-        <div class="modal-actions">
-            <button onclick="cerrarModal()" class="btn-modal-cancel">Cancelar</button>
-            <button onclick="enviarHorasModal()" class="btn-modal-save">Guardar progreso</button>
+
+        <div class="modal-actions-vertical">
+            <button onclick="enviarHorasModal()" class="btn-modal-save-purple">Guardar Progreso</button>
+            <button onclick="cerrarModal()" class="btn-modal-cancel-dark">Cancelar</button>
         </div>
     </div>
 </div>

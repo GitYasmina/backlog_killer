@@ -41,11 +41,11 @@ try {
 
     } else if ($accion === 'actualizar_horas') {
         // Guardamos las horas reales que el usuario escribe en el modal
-        $minutos_nuevos = isset($_POST['horas']) ? (int)$_POST['horas'] : 0;
+        $minutos_totales = isset($_POST['minutos_totales']) ? (int)$_POST['minutos_totales'] : 0;
         
         // Sumamos las horas en la tabla intermedia de la base de datos
         $stmt = $conexion->prepare("UPDATE estados_juego SET horas_jugadas = horas_jugadas + ? WHERE id_usuario = ? AND id_videojuego = ?");
-        $stmt->execute([$minutos_nuevos, $id_usuario, $id_videojuego]);
+        $stmt->execute([$minutos_totales, $id_usuario, $id_videojuego]);
 
         // comprobamos si con esta suma se alcanza la duración estimada para saltar el logro
         $check = $conexion->prepare("
