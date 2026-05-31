@@ -30,10 +30,10 @@ if ($porcentaje_xp > 100) {
         <div class="perfil-banner-top">
             <div class="perfil-avatar-preview">
                 <?php 
-                    // determinamos qué imagen cargar: si existe un avatar real en la BD lo usamos, si no, cargamos el por defecto
-                    $avatar_renderizado = (!empty($u['avatar'])) ? htmlspecialchars($u['avatar']) : 'default.png'; 
+                    // Si por algún motivo está vacío en la base de datos, asignamos default.png
+                    $avatar_renderizado = (!empty($u['avatar'])) ? $u['avatar'] : 'default.png'; 
                 ?>
-                <img src="../assets/img/avatars/<?= $avatar_renderizado ?>" alt="Avatar Actual">
+                <img src="../assets/img/avatars/<?= htmlspecialchars($avatar_renderizado) ?>" alt="Avatar Actual">
             </div>
             <div class="perfil-user-info-top">
                 <h2 class="perfil-titulo-username">¡Hola, <?= htmlspecialchars($u['username']) ?>!</h2>
@@ -137,5 +137,6 @@ if ($porcentaje_xp > 100) {
             }
         });
     </script>
+    <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/dashboard.js"></script>
     <?php include '../views/footer.php'; ?>

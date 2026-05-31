@@ -16,13 +16,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nuevo_email = trim($_POST['email']);
     $nuevo_genero = $_POST['genero_fav'];
 
-    // cogemos el avatar predefinido por defecto
-    $avatar_final = $_POST['avatar'] ?? 'avatar1.png';
+   // averiguamos qué avatar tiene actualmente en la BD
+    $stmt_avatar_actual = $conexion->prepare("SELECT avatar FROM usuarios WHERE id = ?");
+    $stmt_avatar_actual->execute([$user_id]);
+    $user_actual = $stmt_avatar_actual->fetch();
+    
+    // guardamos su avatar actual como base de seguridad
+    $avatar_actual_bd = $user_actual['avatar'] ?? 'default.png';
+
+    // si está vacío, usamos la variable de respaldo ($avatar_actual_bd)
+    $avatar_final = !empty($_POST['avatar']) ? $_POST['avatar'] : $avatar_actual_bd;
 
     // guardamos en sesión temporal por si hay algún error de base de datos
     $_SESSION['perfil_temp'] = $_POST;
+    // metemos el avatar final en la sesión temporal
+    $_SESSION['perfil_temp']['avatar'] = $avatar_final;
 
-    
+    // si el usuario ha subido una foto personal nueva, procesamos la subida y pisamos $avatar_final con el nuevo nombre de archivo
     if (isset($_FILES['foto_personal']) && $_FILES['foto_personal']['error'] === UPLOAD_ERR_OK) {
         
         $fileTmpPath = $_FILES['foto_personal']['tmp_name'];
@@ -49,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 // movemos el archivo de la memoria temporal de XAMPP a la carpeta del proyecto
                 if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                    // si se guarda con éxito, este nuevo archivo será el que registremos en la bd
+                    // si sube una foto personal con éxito, pisamos la variable con el nuevo archivo
                     $avatar_final = $newFileName;
                 }
             } else {
@@ -62,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // intentamos actualizar los datos del usuario en la base de datos
     try {
         $stmt = $conexion->prepare("UPDATE usuarios SET username = ?, email = ?, genero_fav = ?, avatar = ? WHERE id = ?");
         
@@ -77,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     } catch (PDOException $e) {
-        // Si el nombre de usuario o email ya existen en otro usuario
+        // si el nombre de usuario o email ya existen en otro usuario
         if ($e->getCode() == 23000) {
             header("Location: ../public/perfil.php?error=exists");
         } else {
@@ -86,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 } else {
-    // Si alguien intenta entrar a este archivo sin enviar el formulario
+    // si alguien intenta entrar a este archivo sin enviar el formulario
     header("Location: ../public/perfil.php");
     exit();
 }
