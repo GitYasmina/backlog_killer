@@ -11,13 +11,37 @@ unset($_SESSION['registro_datos']);
     <div class="login-card">
         <h2>Crea tu cuenta</h2>
 
-        <?php if (isset($_GET['error'])): ?>
+       <?php if (isset($_GET['error'])): ?>
             <div class="alert-message error">
                 <?php
-                if ($_GET['error'] == 'password_mismatch') echo "⚠️ Las contraseñas no coinciden.";
-                elseif ($_GET['error'] == 'exists') echo "⚠️ El usuario o email ya existen.";
-                elseif ($_GET['error'] == 'weak_password') echo "⚠️ La contraseña debe tener 8 caracteres, una mayuscula, una minuscula y un numero.";
-                else echo "⚠️ Error técnico: " . htmlspecialchars($_GET['error']);
+                // mapeamos los errores técnicos a mensajes entendibles para el usuario
+                switch ($_GET['error']) {
+                    case 'password_mismatch':
+                        echo "⚠️ Las contraseñas introducidas no coinciden. Inténtalo de nuevo.";
+                        break;
+                    case 'invalid_email':
+                        echo "⚠️ El formato del correo electrónico no es válido (ej: tu@email.com).";
+                        break;
+                    case 'email_exists':
+                        echo "⚠️ Este correo electrónico ya está registrado en la plataforma.";
+                        break;
+                    case 'username_exists':
+                        echo "⚠️ El Gamer Tag ya está en uso. ¡Sé original y elige otro!";
+                        break;
+                    case 'weak_password':
+                        echo "⚠️ Contraseña insegura. Debe tener al menos 8 caracteres, e incluir una mayúscula, una minúscula y un número.";
+                        break;
+                    case 'exists':
+                        echo "⚠️ El usuario o el email ya se encuentran registrados.";
+                        break;
+                    case 'db':
+                        echo "⚠️ Hubo un problema de conexión con el servidor. Inténtalo más tarde.";
+                        break;
+                    default:
+                        // en caso de error desconocido, mostramos un mensaje genérico
+                        echo "⚠️ Error al procesar el registro: " . htmlspecialchars($_GET['error']);
+                        break;
+                }
                 ?>
             </div>
         <?php endif; ?>
@@ -64,7 +88,7 @@ unset($_SESSION['registro_datos']);
             <div class="form-group">
                 <label for="confirm_password">Confirmar Contraseña</label>
                 <div class="password-wrapper-premium">
-                    <input type="password" name="password" id="confirm_password" autocomplete="new-password" required placeholder="Repite tu contraseña">
+                    <input type="password" name="confirm_password" id="confirm_password" autocomplete="new-password" required placeholder="Repite tu contraseña">
                     <button type="button" class="btn-toggle-eye" onclick="toggleVisibilidadPassword('confirm_password', 'eye-icon-2')">
                         <i class="fa-solid fa-eye" id="eye-icon-2"></i>
                     </button>

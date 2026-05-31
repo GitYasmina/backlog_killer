@@ -7,8 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = trim($_POST['username']);
     $email = trim($_POST['email']);
     $genero = trim($_POST['genero_fav']);
-    $pass = $_POST['password'];
-    $confirm_pass = $_POST['confirm_password'];
+    $pass = trim($_POST['password']);
+    $confirm_pass = trim($_POST['confirm_password']);
 
    // guardamos los datos en la sesión para persistirlos si hay error 
     $_SESSION['registro_datos'] = [
