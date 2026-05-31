@@ -10,17 +10,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pass = $_POST['password'];
     $confirm_pass = $_POST['confirm_password'];
 
+   // guardamos los datos en la sesión para persistirlos si hay error 
+    $_SESSION['registro_datos'] = [
+        'username' => $user,
+        'email' => $email,
+        'genero_fav' => $genero
+    ]; 
+    
     //validacion correo
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         header("Location: ../public/registro.php?error=invalid_email");
         exit();
     }
-    // guardamos los datos en la sesión para persistirlos si hay error 
-    $_SESSION['registro_datos'] = [
-        'username' => $user,
-        'email' => $email,
-        'genero_fav' => $genero
-    ];
+    
     
     //validacion de que el email no esté ya registrado
     $stmt_check_email = $conexion->prepare("SELECT id FROM usuarios WHERE email = ?");
