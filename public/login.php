@@ -19,7 +19,12 @@
 
             <div class="form-group">
                 <label>Contraseña</label>
-                <input type="password" name="password" id="password" required placeholder="••••••••">
+                <div class="password-wrapper-premium">
+                    <input type="password" name="password" id="password" autocomplete="new-password" required placeholder="••••••••">
+                    <button type="button" class="btn-toggle-eye" onclick="toggleVisibilidadPassword('password', 'eye-icon-1')">
+                        <i class="fa-solid fa-eye" id="eye-icon-1"></i>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn-cta">ENTRAR</button>
@@ -30,5 +35,6 @@
         </p>
     </div>
 </main>
+<script src="../assets/js/utils.js"></script>
 
 <?php include '../views/footer.php'; ?>
